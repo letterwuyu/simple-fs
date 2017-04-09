@@ -4,10 +4,6 @@
 #include <fcntl.h>
 class Transfer {
 public:
-	typedef loff_t offset_type;
-	typedef size_t size_type;
-	typedef unsigned int flag_type;
-	typedef ssize_t return_type;
 	enum SpliceFlag
 	{
 		Splice_Move = SPLICE_F_MOVE,
@@ -15,11 +11,6 @@ public:
 		SPlice_More = SPLICE_F_MORE,
 		Splice_GIFT = SPLICE_F_GIFT
 	}; 
-	static return_type spliceTransfer(int src_fd, 
-									  offset_type src_offset,
-									  int dst_fd,
-									  offset_type dst_offset,
-									  size_type size,
-									  flag_type flag);
+	static ssize_t Splice(int src_fd, loff_t src_offset, int dst_fd, loff_t dst_offset, size_t size, unsigned int flag);
 };
 #endif /* __TRANSFER_H__ */

@@ -1,10 +1,10 @@
 #include "transfer.h"
  Transfer::return_type Transfer::spliceTransfer(int src_fd,
-												Transfer::offset_type src_offset,
+												loff_t src_offset,
 												int dst_fd,
-												Transfer::offset_type dst_offset,
-												Transfer::size_type size,
-												Transfer::flag_type flag)
+												loff_t dst_offset,
+												size_t size,
+												unsigned int flag)
 {
 	int pipefd[2];
 	pipe(pipefd);
