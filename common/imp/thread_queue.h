@@ -15,8 +15,23 @@ public:
 	{
 		std::unique_lock<std::mutex> lk(mut_);
 		data_cond_.wait(lk, [this]{return !data_queue_.empty();})
-		
+		value = std::move(*data_queue_.front());
+		data_queue_.pop();	
 	}
+	
+	bool try_pop(T& value)
+	{
+		std::lock_guard<std::mutex> lk(mut_);
+		if(data_queue_.empty())
+		{
+			return false;
+		}
+		value = std::move(*data_queue_.front());
+		data_queue_.pop();
+		return true;
+	}
+
+	
 private:
 	mutable std::mutex mut_;
 	std::queue<std::shared_ptr<T>> data_queue_;
