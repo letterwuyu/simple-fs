@@ -1,23 +1,23 @@
-#include "pakage_analysis.h"
+#include "package_analysis.h"
 
 namespace net {
-
-PackageAnalysis::PackageAnalysis(HandleNetPackType& handle)
-	: handle_net_pack_(handle), remain_size_(0), first_(true)
+PackageAnalysis::PackageAnalysis(PackageAnalysis::HandleType handle)
+	:handle_net_pack_(handle), remain_size_(0), first_(true)
 {
 	memset(last_save_data_, 0 , sizeof(last_save_data_));
 }
 
-bool PackageAnalysis::TcpDataSplit(const char* rec_net_data, size_t rec_size)
+bool PackageAnalysis::TcpDataSplit(const char* recv_data, size_t recv_size)
 {
 	if(first_)
 	{
 		memset(last_save_data_, 0, sizeof(last_save_data_));
 		first_ = 0;
 	}
-	memcpy(static_cast<char*>(last_save_data_ + remain_size_), rec_net_data, rec_size);
+	memcpy(static_cast<char*>(last_save_data_ + remain_size_), recv_data, recv_size);
+	remain_size_ += recv_size;
 	NetDataHeader* data_head = reinterpret_cast<NetDataHeader*>(last_save_data_);
-	while(remain_size_ > sizeof(NetDataHeader) && remain_size_ >= sizeof(NetDataHeader) + data_header->data_size_)
+	while(remain_size_ > sizeof(NetDataHeader) && remain_size_ >= sizeof(NetDataHeader) + data_head->data_size_)
 	{
 		handle_net_pack_(data_head);
 		size_t rec_object_size = sizeof(NetDataHeader) + data_head->data_size_;
@@ -28,6 +28,7 @@ bool PackageAnalysis::TcpDataSplit(const char* rec_net_data, size_t rec_size)
 		memmove(last_save_data_, reinterpret_cast<char*>(data_head), remain_size_);
 		memset(last_save_data_ + remain_size_, 0, sizeof(last_save_data_) - remain_size_);
 	}
+	return true;
 }
 
 }
