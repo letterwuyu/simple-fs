@@ -5,8 +5,8 @@
 #include <atomic>
 #include <future>
 #include <functional>
-#include "thread_safe_queue.h"
-
+#include "thread_queue.h"
+#include <iostream>
 namespace imp {
 
 class FunctionWrapper {
@@ -73,14 +73,14 @@ public:
 			}
 		}
 		catch(...)
-		{
+		{ 
 			done_ = true;
 			throw;
-		}
+		} 
 	}
 
 	~ThreadPool()
-	{
+	{  
 		done_ = true;
 	}
 
@@ -122,7 +122,7 @@ public:
 	}
 private:
 	void WorkThread()
-	{
+	{  
 		local_work_queue_.reset(new LocalQueueType);
 		while(!done_)
 		{
@@ -133,12 +133,13 @@ private:
 public:
 	typedef std::queue<FunctionWrapper> LocalQueueType;
 private:
-	ThreadSafeQueue<FunctionWrapper> pool_work_queue_;
+	ThreadQueue<FunctionWrapper> pool_work_queue_;
 	static thread_local std::unique_ptr<LocalQueueType> local_work_queue_;
 	std::atomic_bool done_;
 	std::vector<std::thread> threads_;
 	JoinThreads joiner_;
 };
+thread_local std::unique_ptr<ThreadPool::LocalQueueType> ThreadPool::local_work_queue_;
 
 }
 #endif //_THREAD_POOL_H_
