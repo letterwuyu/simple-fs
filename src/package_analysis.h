@@ -23,22 +23,22 @@ struct NetDataBase
 
 class PackageAnalysis {
 public:
-    typedef void (*HandleType)(void*);
-    PackageAnalysis(HandleType handle);
+	typedef std::function<bool(void*, void*)> HandleMap;
+	PackageAnalysis();
 	bool TcpDataSplit(const char* recv_data, size_t recv_size);
-private:
+	bool HandleNetPack(void* control, void* package);
+protected:
 	char last_save_data_[kMaxNetPackSize];
     size_t remain_size_;
     bool first_;
-	HandleType handle_net_pack_;
+	HandleMap handle_map_;
 };
 
 template<typename DataType>
 struct Package
 {
 	NetDataHeader data_header_;
-	DataType data_;
-};
+	DataType data_;};
 
 }
 #endif //_PACKAGE_ANALYSIS_H__

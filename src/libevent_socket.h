@@ -14,6 +14,7 @@ namespace net{
 		virtual ~SocketEvent();
 		void SetBuffer(struct bufferevent *buffer);
 		void Init();
+		void Write(void* buffer, size_t size);
 	private:
 		static void ReadCallBack(struct bufferevent *bev, void *user_data);
 		static void WriteCallBack(struct bufferevent *bev, void *user_data);		
