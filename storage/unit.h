@@ -1,17 +1,13 @@
 #ifndef _UNIT_H_
 #define _UNIT_H_
-#include <string>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
+#include "..common/def/def.h"
 
 class Unit {
 public:
 	static const size_t Size = 1024 * 1024 * 4;
 public:
-	Unit(const std::string& name)     : name_(name), size_(0) {}
-	Unit(std::string&& name) noexcept : name_(name), size_(0) {}
+	Unit(const std::string& name) : name_(name), size_(0) {}
+	Unit(std::string&& name) : name_(std::move(name)), size_(0) {}
 	virtual ~Unit() {}
 public:
 	void Write(size_t orign, void* buffer, size_t count)
