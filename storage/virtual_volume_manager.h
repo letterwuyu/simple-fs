@@ -1,45 +1,48 @@
-#ifndef VIRTUAL_VOLUME_MANAGER
-#define VIRTUAL_VOLUME_MANAGER
-#include "virtual_volume.h"
-#include "../common/imp/singleton.h"
-#include "../common/def/def.h"
-#include "../commom/log4z/log4z.h"
-#include <chrono>
-#include <vector>
-#include <map>
-using namespace imp;	
-using namespace std::chrono;
+#ifndef VIRTUAL_VOLUMME_MANAGER_H
+#define VIRTUAL_VOLUMME_MANAGER_H
+#include "global.h"
+#include "dbmanager.h"
 
-class VirtualVolumeManger {
+class VirtualVolumeManager {
 public:
 	uint64 CreateVirtualVolume()
 	{
-		if(Singletion<StorageManager>::instance.ServerNum == 0)
+		vector<uint64> servers = singleton<DataServerManager>::intance().GetServers();
+		if(servers.empty)
 			return 0;
-		uint64 volume_id = system_clock::now().since_time_epoch().count();
-		VirtualVolume virtual_volume(volume_id);
-		virtual_volume.AddStorage(Singletion<StorageManager>::instance.SelectServer());
-		LOGINFO("create virtual volume id = " << volume_id);
+		SocketEvent* se = singleton<DataServerManager>::intance().GetServer(servers[0]);
+		if(NULL == se)
+			return 0;
+		
+		uint64 volume_id steady_clock::now().time_since_epoch().count();
+		ostringstream vos;
+		vos << "virtual_volume "<< volume_id;
+		ostringstream sos;
+		sos << servers[0];
+		singleton<DBManager>::instance().Put(os.str(), sos.str());
+		shared_ptr<VirtualVolume> sp = maked_shared<VirtualVolume>(VirtualVolume);
+		sp->AddServer(servers[0]);
+		
+		CONSTRUCT_MESSAGE(GD_CreateVolume);
+		msg.volume_info_.volume_id_ = servers[0];
+		se->Write(reinterpret_cast<char*>(&msg), sizeof(msg));
+		
+		virtual_volume_map_.insert(make_pair(volume_id, sp));
+		return volume_id;
 	}
 
-	void DeleteVirtualVolume(volume_id)
+	shared_ptr<VirtualVolume>& GetVirtualVolume(uint64 volume_id)
 	{
-		for(auto it = virtual_volumes_.begin(), it != virtual_volumes_.end(); ++it)
-		{
-			if(it.GetVolumeId() == volume_id)
-			{
-				it = virtual_volumes_.erase(it);
-			}
-		}
+		auto it = virtual_volume_map_.find(volume_id);
+	//	if(it != virtual_volume_map_.end())
+			return it->second;
 	}
 
-	std::vector<VirtualVolume>& GetList()
-	{
-		return virtual_volumes_;
+	AddVolumeServer(uint64 volume_id, uint64 server_id)
+	{				
 	}
+
 private:
-	std::vector<VirtualVolume> virtual_volumes_;
-	std::multimap<std::string, uint64> server_volume_map_;
-	std::multimap<uint64, std::string> volume_server_map_;
+	map<uint64, shared_ptr<VirtualVolume> > virtual_volume_map_;	
 };
-#define //VIRTUAL_VOLUME_MANAGER
+#endif //VIRTUAL_VOLUMME_MANAGER_H

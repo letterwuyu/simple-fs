@@ -1,51 +1,27 @@
 #ifndef VIRTUAL_VOLUME_H
 #define VIRTUAL_VOLUME_H
-#include <map>
-#include <vector>
-#include <random>
-#include "volume.h"
-#include "session.h"
-#include "../common/def.def.h"
-#include "../common/net/libevent_socket.h"
-
-using namespace net;
+#include "global.h"
 
 class VirtualVolume {
 public:
-	VirtualVolume(uint64 volume_id):volume_id_(volume_id) {}
-	void AddStorage(SocketEvent* storage)
+	virtualVolume() = default;
+	~VirtualVolume() = default;
+	bool SetVolumeId(uint64 volume_id)
 	{
-		storages_.push_back(storage);
+		volume_id_;
+		return true;		
 	}
-	void DeleteStorage(SockEvent* storage)
+	bool AddServer(uint64 server_id)
 	{
-		for(auto it = storages_.begin(); it != storages_.end(); ++it)
-		{
-			if(*it == storage)
-			{
-				it = storages_.erase(it);
-			}
-		}
+		servers_id_.push_back(server_id);
+		return true;
 	}
-	vector<SocketEvent*>& GetList()
+	vector<uint64>& GetServers()
 	{
-		return storages_;
-	}
-	
-	SocketEvent* SelectStorage()
-	{
-		if(storages_.empty())
-			return NULL;
-		std::default_random_engine random;
-		std::uniform_int_distribution<int> dis(0, storages_.size());
-		return storages_[dis(random)];
-	}
-	uint64 GetVolumeId()
-	{
-		return volume_id_;
+		return servers_id_;
 	}
 private:
-	vector<SocketEvent*> storages_;
+	vector<uint64> servers_id_;
 	uint64 volume_id_;
 };
-#endif /* VIRTUAL_VOLUME_H */
+#endif //VIRTUAL_VOLUME_H
