@@ -16,33 +16,15 @@ using namespace std;
 
 class DataServerManager {
 public:
-	DataServerManager() = default;
-	~DataServerManager() = default;
-	bool AddServer(int server_id, SocketEvent* server)
-	{
-		servers_.push_back(server_id);
-		server_map_.insert(make_pair(server_id, server));
-		return true;
-	}
-	bool DeleteServer(int server_id)
-	{
-		server_map_.erase(server_id);
-		servers_.erase(server_id);
-	}
-	SocketEvent* GetServer(server_id)
-	{
-		auto it = server_map_.find(server_id);
-		if(it != server_map_.end())
-			return it->second;
-		return NULL;
-	}
-	vecetor<int>& GetServers()
-	{
-		return servers_;
-	}
+	DataServerManager();
+	~DataServerManager();
+	bool AddServer(sint32 server_id, SocketEvent* server)
+	bool DeleteServer(sint server_id)
+	SocketEvent* GetServer(sint32 server_id)
+	vecetor<sint32>& GetServers()
 private:
-	map<int, SocketEvent*> server_map_;	
-	vector<int> servers_;
+	map<sint32, SocketEvent*> server_map_;	
+	vector<sint32> servers_;
 };
 
 #endif //DATA_SERVER_MANAGER_H

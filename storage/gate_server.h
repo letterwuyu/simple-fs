@@ -6,12 +6,19 @@ class GateSocket:public SocketEvent {
 public:
 	GateSocket();
 	void ReadHandle(struct bufferevent* bev);
+	typedef std::unordered_map<uint32, function<bool(void*, void*)> > HandleMap;
+public:
+	static bool InitHandleMap();
+
+	StaticHandle(DG_HandShake);
+	StaticHandle(CG_CreateVirtualVolume);
+	StaticHandle(CG_LoadVirtualVolume);
+	StaticHandle(CG_UpdateVirtualVolume);	
+	
 private:
-	bool TcpDataSplit(const char* recv_data, size_t recv_size);
-	void HandleNetPack(NetDataHeader* header);
-	char last_save_data_[kMaxNetPackSize];
-    size_t remain_size_;
-    bool first_;
+	PackageAnalysis package_analysis_;
+	static void HandleNetPack(void* header);
+	static HandleMap handle_map_;	
 };
 
 class GateServer:public MainEvent, public commonThread {

@@ -4,8 +4,7 @@
 
 class VirtualVolume {
 public:
-	virtualVolume() = default;
-	~VirtualVolume() = default;
+	VirtualVolume();
 	bool SetVolumeId(uint64 volume_id)
 	{
 		volume_id_;

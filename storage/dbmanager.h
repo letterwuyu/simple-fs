@@ -6,37 +6,12 @@
 
 class DBManager {
 public:
-	DBManager()
-	{
-		leveldb::Options options;
-		options.create_if_missing = true;
-		status = leveldb::DB::Open(options, "./db", &db);
-		assert(status.ok());
-	}
-	~DBManager()
-	{
-		delete *db;
-	}
+	DBManager();
+	~DBManager();
 
-	void Put(const std::string& key, const std::string& value)
-	{
-		status = db->Put(leveldb::WriteOptions(), key, &value);
-		assert(status.ok());
-	}
-
-	bool Get(const std::string& key, std::string& value)
-	{
-		status = db->Get(leveldb::ReadOptions(), key, &value);
-;
-		if(!status.ok()) return false;
-		return true;
-	}
-
+	void Put(const std::string& key, const std::string& value);
+	bool Get(const std::string& key, std::string& value);
 	void Delete(const std::string& key)
-	{
-		status = db->Delete(leveldb::WriteOptions(), key);
-		assert(status.ok());
-	}
 private:
 	leveldb::DB* db;
 	leveldb::Status status;	
