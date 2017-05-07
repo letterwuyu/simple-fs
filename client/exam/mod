@@ -1,0 +1,8 @@
+crash: sampleblk: No such file or directory
+
+Usage:
+
+  crash [OPTION]... NAMELIST MEMORY-IMAGE[@ADDRESS]	(dumpfile form)
+  crash [OPTION]... [NAMELIST]             		(live system form)
+
+Enter "crash -h" for details.
