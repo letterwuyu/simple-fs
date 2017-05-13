@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/builder_stream.dir/builder_stream.o  -o builder_stream  -L/usr/local/lib -rdynamic -lbsoncxx -Wl,-rpath,/usr/local/lib 

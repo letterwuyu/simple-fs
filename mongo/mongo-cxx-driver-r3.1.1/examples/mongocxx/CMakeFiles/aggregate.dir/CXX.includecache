@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/aggregate.cpp
+iostream
+-
+bsoncxx/json.hpp
+-
+mongocxx/client.hpp
+-
+mongocxx/instance.hpp
+-
+mongocxx/pipeline.hpp
+-
+mongocxx/uri.hpp
+-
+

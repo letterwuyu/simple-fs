@@ -10,6 +10,7 @@ namespace net{
 	class SocketEvent{
 	public:
 		SocketEvent();
+		SocketEvent(struct bufferevent* buffer);
 		virtual ~SocketEvent();
 		void SetBuffer(struct bufferevent *buffer);
 		void Init();
@@ -20,7 +21,8 @@ namespace net{
 	public:
 		virtual void ReadHandle(struct bufferevent *bev) = 0;
 		virtual void WriteHandle(struct bufferevent *bev) = 0;
-		virtual void EventHandle(struct bufferevent *bev)= 0;  
+		virtual void EventHandle(struct bufferevent *bev)= 0; 
+		void Write(void* buffer, size_t size); 
 	private:
 		struct bufferevent *_buffer;
 	};

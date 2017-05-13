@@ -14,6 +14,7 @@ public:
 	~Volume();
 	bool Write(size_t orgin, void* data, size_t count);
     bool Read(size_t orgin, void* data, size_t count);
+	bool Delete();
     const std::string& GetName() const;
     uint64             GetId() const;i
 

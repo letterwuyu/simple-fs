@@ -26,6 +26,13 @@ Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 	return vp;
 }
 
+Volume* VolumeManager::GetVolume(const std::string& volume_name)
+{
+	 std::hash<std::string> hash_fn;
+     uint64 volume_id = hash_fn(volume_name);
+	 return GetVolume(volume_id);
+}
+
 Volume* VolumeManager::GetVolume(uint64 volume_id)
 {
 	auto it = volume_map_.find(volume_id);
@@ -42,8 +49,11 @@ Volume* VolumeManager::GetVolume(uint64 volume_id)
 	return it->second;
 }
 
-bool VolumeManager::DeleteVolume(uint64 volume_id)
+bool VolumeManager::DeleteVolume(const std::string& volume_name)
 {
+	
+	std::hash<std::string> hash_fn;
+    uint64 volume_id = hash_fn(volume_name);
 	auto it = volume_map_.find(volume_id);
 	if(volume_map_.end() == it)
     {
@@ -57,7 +67,6 @@ bool VolumeManager::DeleteVolume(uint64 volume_id)
         return false;
     }
 	it->second->Delete();
-	CSingle(DBManager).Delete(std::to_string(volume_id));
     volume_map_.erase(it);
 	return true;
 }

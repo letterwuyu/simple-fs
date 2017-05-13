@@ -1,6 +1,8 @@
 #include "libevent_socket.h"
 #include <stdlib.h>
 namespace net {
+	SocketEvent::SocketEvent(struct bufferevent* buffer):
+		_buffer(buffer) {}
 	SocketEvent::SocketEvent():
 		_buffer(NULL) {}
 

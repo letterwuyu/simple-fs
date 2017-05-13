@@ -1,0 +1,15 @@
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/get_values_from_documents.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/query.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/index.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/remove.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/exception.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/aggregate.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/inserted_id.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/create.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/bulk_write.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/query_projection.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/instance_management.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/document_validation.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/connect.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/view_or_value_variant.dir
+/root/mongo-cxx-driver-r3.1.1/examples/mongocxx/CMakeFiles/update.dir

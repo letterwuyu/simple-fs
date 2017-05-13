@@ -31,6 +31,7 @@ bool Unit::Create()
 
 bool Unit::Delete()
 {
+	CSingle(DBManager).Delete(id_);
 	remove(name_.c_str());
 	return true;
 }

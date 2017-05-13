@@ -38,10 +38,10 @@ class ServiceMain : public net::MainEvent, public CommonThread {
 public:
 	ServiceMain();
 	void ListenHandle(struct bufferevent *bev);
-	void Run();:
+	void Run();
 	typedef std::unordered_map<sint32, std::function<bool(void*, void*)>> HandleMap;
 private:
 	std::vector<ServiceEvent> services_;
-	HandleMap handle_map_;
+	
 };
 #endif //CLIENT_SERVICE_H

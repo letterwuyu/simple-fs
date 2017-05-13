@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/query_projection.dir/query_projection.o  -o query_projection  -L/usr/local/lib -rdynamic -lmongocxx -Wl,-rpath,/usr/local/lib 

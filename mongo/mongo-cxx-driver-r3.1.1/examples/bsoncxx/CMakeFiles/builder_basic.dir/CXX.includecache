@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/mongo-cxx-driver-r3.1.1/examples/bsoncxx/builder_basic.cpp
+cstdlib
+-
+bsoncxx/builder/basic/array.hpp
+-
+bsoncxx/builder/basic/document.hpp
+-
+bsoncxx/builder/basic/kvp.hpp
+-
+bsoncxx/types.hpp
+-
+

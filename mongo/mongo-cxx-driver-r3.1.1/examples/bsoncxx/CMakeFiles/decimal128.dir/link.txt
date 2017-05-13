@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/decimal128.dir/decimal128.o  -o decimal128  -L/usr/local/lib -rdynamic -lbsoncxx -Wl,-rpath,/usr/local/lib 

@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/view_and_value.dir/view_and_value.o  -o view_and_value  -L/usr/local/lib -rdynamic -lbsoncxx -Wl,-rpath,/usr/local/lib 

@@ -1,0 +1,2 @@
+ g++ c3.cc -I/usr/local/include/bsoncxx/v_noabi -I/usr/local/include/mongocxx/v_noabi -std=c++11 -I/usr/local/include/mongocxx -lmongocxx -lbsoncxx
+

@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/get_values_from_documents.dir/get_values_from_documents.o  -o get_values_from_documents  -L/usr/local/lib -rdynamic -lmongocxx -Wl,-rpath,/usr/local/lib 

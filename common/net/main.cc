@@ -5,6 +5,8 @@
 
 class MySocket:public net::SocketEvent {
 public:
+	MySocket(struct bufferevent *bev) : net::SocketEvent(bev) {}
+	MySocket() = default;
 	void ReadHandle(struct bufferevent *bev)
 	{
 		std::cout << "hello world" << std::endl;
@@ -21,6 +23,8 @@ public:
 	{
 		_socket.SetBuffer(bev);
 		_socket.Init();
+//		static_cast<MySocket>(bev).Init();
+//		sock.Init();
 	}
 	
 	void Run()

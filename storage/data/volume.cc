@@ -11,8 +11,18 @@ Volume::comminute_type Volume::Comminute(size_t orgin, void* data, size_t count)
         int num = diff / Unit::Size;
         while(--num)
         {
-        	Unit* punit = CSingle(UnitManager).CreateUnit();
-            Units_push_back(punit);
+        	Unit* punit = GSingle(UnitManager).CreateUnit();
+            Units_.push_back(punit);
+			std::ostringstream vos(GSingle(DBManager).Get(std::to_string(id_)));
+			if(vos.str().empty())
+			{
+				vos << punit->GetId();
+			}
+			else
+			{
+				vos << " " << punit->GetId();
+			}
+			GSingle(DBManager).Put(std::to_string(id_), vos.str());
         }
    	}
     comminute_type coms;
@@ -49,6 +59,16 @@ bool Volume::bool Read(size_t orgin, void* data, size_t count)
     	units_[std::get<0>(*it)]->Read(std::get<1>(*it), std::get<1>(*it), std::get<2>(*it), std::get<3>(*it));    
     }
 	return true;
+}
+
+bool Volume::Delete()
+{
+	for(size_t i = 0; i <units_.size(); ++i)
+	{
+		units_[i]->Delete();
+	}
+	GSingle(DBManager).Delete(name_);
+	GSingle(DBManager).Delete(std::to_string(id_));
 }
 
 const std::string& Volume::GetName() const

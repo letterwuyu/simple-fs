@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/builder_core.dir/builder_core.o  -o builder_core  -L/usr/local/lib -rdynamic -lbsoncxx -Wl,-rpath,/usr/local/lib 

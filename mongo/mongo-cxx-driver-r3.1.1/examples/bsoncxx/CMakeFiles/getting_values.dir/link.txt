@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/getting_values.dir/getting_values.o  -o getting_values  -L/usr/local/lib -rdynamic -lbsoncxx -Wl,-rpath,/usr/local/lib 
