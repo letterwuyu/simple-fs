@@ -9,6 +9,12 @@ void fun2() {
 	std::cout << "world" << std::endl;
 }
 
+void func3(std::string s)
+{
+	std::cout << "eee";
+	std::cout << s << std::endl;
+}
+
 int main()
 {
 	imp::ThreadPool tp;
