@@ -12,11 +12,16 @@ public:
 	typedef std::vector<std::tuple<int, int, void*, size_t>> comminute_type;
 	Volume(const std::string& name, uint64 id);
 	~Volume();
-	bool Write(size_t orgin, void* data, size_t count);
-    bool Read(size_t orgin, void* data, size_t count);
-	bool Delete();
-    const std::string& GetName() const;
-    uint64             GetId() const;i
+public:
+	bool 		Write(size_t orgin, void* data, size_t count);
+    bool 		Read(size_t orgin, void* data, size_t count);
+	bool 		Delete(void);
+	bool        Create(void);
+private:
+	bool 		ApplenUnit(void);
+public:
+    const 		std::string& GetName(void) const;
+    uint64      GetId(void) const;
 
 private:
 	comminute_type Comminute(size_t orgin, void* data, size_t count);	

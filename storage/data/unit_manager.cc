@@ -18,7 +18,7 @@ Unit* UnitManager::CreateUnit()
 	std::ostringstream osvalue;
 	osvalue
 	osvalue << "./storage/" << unit_id;
-	CSingle(DBManager).Put(oskey.str(), osvalue.str());
+	GSingle(LevelDBManager).Put(oskey.str(), osvalue.str());
 	Unit* punit = new unit(uos.str(), unit_id);
 	unit_map_.insert(make_pair(unit_id, punit));
 	punit->Create();
@@ -39,7 +39,7 @@ bool UnitManager::DeleteUnit(uint64 unit_id)
 		return false;
 	}
 	
-	CSingle(DBManager).Delete(it->GetId());
+	GSingle(LevelDBManager).Delete(it->GetId());
 	it->second->Delete();
 	delete it->second;
 	unit_map_.erase(it);

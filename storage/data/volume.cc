@@ -61,22 +61,57 @@ bool Volume::bool Read(size_t orgin, void* data, size_t count)
 	return true;
 }
 
-bool Volume::Delete()
+bool Volume::Delete(void)
 {
 	for(size_t i = 0; i <units_.size(); ++i)
 	{
+		//将unit释放掉--将对应文件删除，从LevelDB中删除
 		units_[i]->Delete();
 	}
-	GSingle(DBManager).Delete(name_);
-	GSingle(DBManager).Delete(std::to_string(id_));
+	//将MongoDB中对应的volume清除
+	return true;
 }
 
-const std::string& Volume::GetName() const
+const std::string& Volume::GetName(void) const
 {
 	return name_;
 }
 
-uint64 Volume::GetId() const;
+uint64 Volume::GetId(void) const;
 {
 	return id_;
 }
+
+bool Volume::ApplenUnit(void)
+{
+	Unit* punit = GSingle(UnitManager).CreateUnit();
+	if(nullptr == punit)
+	{
+		LOGError("Volume::ApplenUnit nullptr == punit");
+		return false;
+	}
+    Units_.push_back(punit);
+    //存入MongoDB
+	GSingle(MongoDBCXXManager).GetDB().AddUnitForVolume(name_, punit->GetId());
+	return true;
+}
+
+bool Volume::Create(void)
+{
+	return ApplenUnit();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

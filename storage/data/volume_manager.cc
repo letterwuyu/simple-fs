@@ -16,13 +16,17 @@ Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 	std::hash<std::string> hash_fn;
 	uint64 volume_id = hash_fn(volume_name);
 	Volume* vp = new Volume(volume_name, volume_id);
-	if(NULL == vp)
+	if(nullptr == vp)
 	{
-		LogError("VolumeManager::CreateVolume NULL == vp");
-		return NULL;
-	} 
-	CSingle(DBManager).Put(volume_name, std::to_string(volume_id));
-	CSingle(DBManager).Put(std::to_string(volume_id), std::string());
+		LogError("VolumeManager::CreateVolume nullptr == vp");
+		return nullptr;
+	}
+	//此时执行create函数，正式为volume创建第一个unit并存入MongoDB
+	if(!vp->Create())
+	{
+		LogError("VolumeManager::CreateVolume create volume fail");
+		return nullptr;
+	}
 	return vp;
 }
 
