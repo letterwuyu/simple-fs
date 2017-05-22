@@ -1,8 +1,8 @@
 #include "package_analysis.h"
 #include <assert.h>
 namespace net {
-PackageAnalysis::PackageAnalysis(/*PackageAnalysis::HandleType handle*/)
-	:/*handle_net_pack_(handle), */remain_size_(0), first_(true)
+PackageAnalysis::PackageAnalysis(PackageAnalysis::HandleType handle)
+	:handle_net_pack_(handle), remain_size_(0), first_(true)
 {
 	memset(last_save_data_, 0 , sizeof(last_save_data_));
 }
@@ -19,8 +19,8 @@ bool PackageAnalysis::TcpDataSplit(const char* recv_data, size_t recv_size)
 	NetDataHeader* data_head = reinterpret_cast<NetDataHeader*>(last_save_data_);
 	while(remain_size_ > sizeof(NetDataHeader) && remain_size_ >= sizeof(NetDataHeader) + data_head->data_size_)
 	{
-		//handle_net_pack_(data_head);
-		HandleNetPack(data_head);
+		handle_net_pack_(data_head);
+//		HandleNetPack(data_head);
 		size_t rec_object_size = sizeof(NetDataHeader) + data_head->data_size_;
 		remain_size_ -= rec_object_size;
 	}
@@ -31,9 +31,11 @@ bool PackageAnalysis::TcpDataSplit(const char* recv_data, size_t recv_size)
 	}
 	return true;
 }
-
-void PackageAnalysis::HandleNetPack()
+/*
+void PackageAnalysis::HandleNetPack(void* header)
 {
 	//此处设置断言，防止继承类没有重写HandleNetPack
 	assert(false);
+}
+*/
 }

@@ -1,21 +1,28 @@
 #include"virtual_volume.h"
 
-VirtualVolume::VirtualVolume():
-	servers_id_(std::vector<uint64>()), volume_id_(0) {}
-
-bool VirtualVolume::SetVolumeId(uint64 volume_id)
-{   
-	volume_id_;
-	return true;    
+bool VirtualVolume::AddServer(ServerInfo* server)
+{
+	servers_.push_back(server);
+	return true;
 }
 
-bool VirtualVolume::AddServer(uint64 server_id)
-{   
-	servers_id_.push_back(server_id);
+bool VirtualVolume::DeleteServer(int32_t server_id)
+{
+	for(auto it = servers_.begin(); it != servers_.end(); ++it)
+	{
+		if(nullptr == *it)
+			continue;
+		if((*it)->server_id == server_id)
+		{
+			servers_.erase(it);
+			return true;
+		}
+	}
 	return true;
-}   
+}
 
-vector<uint64>& VirtualVolume::GetServers()
-{   
-	return servers_id_;
-}   
+const VirtualVolume::ServerList VirtualVolume::GetServerList()
+{
+	return servers_;
+}
+

@@ -6,7 +6,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <errno.h>
-
+#include "package_analysis.h"
+#include "test_message.h"
 int main(int argc, char **argv) {
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	struct hostent *server = gethostbyname("127.0.0.1");
@@ -26,11 +27,17 @@ int main(int argc, char **argv) {
 		printf("error connect %d\n", errno);
 		exit(0);
 	}
-	char buf[1024] = {0};
+/*	char buf[1024] = {0};
 	strcpy(buf, "hello world");
 	int n = write(sockfd, buf, sizeof(buf));
 	buf[n] = '\0';
 	printf("%s\n", buf);
+*/
+	Message msg;
+	msg.header_.data_type_ = 1;
+	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	printf("============================\n");
+	send(sockfd, &msg, sizeof(msg), 0);	
 	close(sockfd);
 	return 0;	
 }

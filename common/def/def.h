@@ -33,11 +33,11 @@
 #define MAX_VOLUME_NAME 20
 
 //log
-#define LOGINFO  	LOGI
-#define LOGWARN  	LOGW
-#define LOGERROR 	LOGE
-#define LOGALARM 	LOGA
-#define LOGFATAL 	LOGF
+#define LogInfo  	LOGI
+#define LogWarn  	LOGW
+#define LogError 	LOGE
+#define LogAlarm 	LOGA
+#define LogFatal	LOGF
 #endif //DEF_H
 
 
@@ -59,3 +59,9 @@
 //
 
 #define MAX_COPY_NUM 2
+
+//数值
+
+#define MaxVolumeNameSize 100  //卷名称最大长度
+
+#endif //DEF_H

@@ -13,13 +13,16 @@ UnitManager::~UnitManager()
 Unit* UnitManager::CreateUnit()
 {
 	uint64 unit_id = steady_clock::now().time_since_epoch.count();
+	/*
 	std::stringstream oskey;
 	oskey << unit_id;
 	std::ostringstream osvalue;
 	osvalue
 	osvalue << "./storage/" << unit_id;
 	GSingle(LevelDBManager).Put(oskey.str(), osvalue.str());
-	Unit* punit = new unit(uos.str(), unit_id);
+	*/
+	GSingle(LevelDBManager).CreateUnit(unit_id);
+	Unit* punit = new unit(std::to_string(unit_id), unit_id);
 	unit_map_.insert(make_pair(unit_id, punit));
 	punit->Create();
 	return punit;
@@ -39,7 +42,7 @@ bool UnitManager::DeleteUnit(uint64 unit_id)
 		return false;
 	}
 	
-	GSingle(LevelDBManager).Delete(it->GetId());
+	GSingle(LevelDBManager).DeleteUnit(it->GetId());
 	it->second->Delete();
 	delete it->second;
 	unit_map_.erase(it);

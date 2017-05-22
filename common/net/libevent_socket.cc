@@ -45,6 +45,11 @@ namespace net {
 		SocketEvent *pSocketEvent = static_cast<SocketEvent*>(user_data);
 		pSocketEvent->EventHandle(bev);
 	}
+
+	int SocketEvent::Write(void* buffer, size_t size)
+	{
+		return bufferevent_write(_buffer, buffer, size);
+	}
 }
 
 

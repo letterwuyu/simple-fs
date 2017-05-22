@@ -23,8 +23,15 @@ public:
 public:
 	static void NetHandle(void* net_pack);
 private:
+	static bool SendMessage(void* event, void* data, size_t size);
 	static DataEvent* Connection(const std::string& ip, int32_t port);
 	static void RegisterProcess(void);
+
+	static bool GDCreateVolume(void* event, void* data);
+	static bool GDDeleteVolume(void* event, void* data);
+	static bool GDUpdateVolume(void* event, void* data);
+	
+	static bool CDReadVolume(void* event, void* data);	
 private:
 	static HandleMap handle_map_;
 	std::vector<DataEvent*> events_;

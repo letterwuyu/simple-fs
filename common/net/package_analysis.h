@@ -1,6 +1,7 @@
 #ifndef _PACKAGE_ANALYSIS_H__
 #define _PACKAGE_ANALYSIS_H__
 #include <string.h>
+#include <stdint.h>
 #include <functional>
 #include <unordered_map>
 namespace net {
@@ -22,15 +23,15 @@ struct NetDataBase
 
 class PackageAnalysis {
 public:
-//    typedef void (*HandleType)(void*);
-    PackageAnalysis(/*HandleType handle*/);
+    typedef void (*HandleType)(void*);
+    PackageAnalysis(HandleType handle);
 	bool TcpDataSplit(const char* recv_data, size_t recv_size);
 private:
 	char last_save_data_[kMaxNetPackSize];
+	HandleType handle_net_pack_;
     size_t remain_size_;
     bool first_;
-//	HandleType handle_net_pack_;
-	void HandleNetPack(void* header);
+//	void HandleNetPack(void* header);
 };
 
 template<typename DataType>

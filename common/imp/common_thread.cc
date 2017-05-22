@@ -24,6 +24,7 @@ void* CommonThread::ThreadProxyFunc(void *args)
 	CommonThread *pThread = static_cast<CommonThread*>(args);
 	pThread->_thread_status = THREAD_STATUS_RUNNING;
 	pThread->Run();
+	return NULL;
 }
 
 void CommonThread::Join()

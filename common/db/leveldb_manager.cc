@@ -13,6 +13,7 @@ LevelDBManager::~LevelDBManager()
 	 delete *db;
 }
 
+/*
 void LevelDBManager::Put(const std::string& key, const std::string& value)
 {   
 	status = db->Put(leveldb::WriteOptions(), key, &value);
@@ -31,4 +32,31 @@ void LevelDBManager::Delete(const std::string& key)
 	status = db->Delete(leveldb::WriteOptions(), key);
 	assert(status.ok());
 }
+*/
+
+bool LevelDBManager::CreateUnit(uint64_t unit_id)
+{
+	status_ = db_->Put(leveldb::WriteOptions(), std::to_string(unit_id), std::to_string(unit_id));
+	return status_.ok();
+}
+
+bool LevelDBManager::DeleteUnit(uint64_t unit_id)
+{
+	status_ = db_->Delete(leveldb::WriteOptions(), std::to_string(unit_id));
+	return status_.ok();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

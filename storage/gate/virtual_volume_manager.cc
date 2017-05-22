@@ -5,8 +5,9 @@ VirtualVolumeManager::VirtualVolumeManager():
 
 VirtualVolumeManager::~VirtualVolumeManager() {}
 
-uint64 VirtualVolumeManager::CreateVirtualVolume()
+bool VirtualVolumeManager::CreateVirtualVolume(const std::string& virtual_volume_name)
 {
+/*
 	vector<uint64> servers = singleton<DataServerManager>::intance().GetServers();
    	if(servers.empty)
       	return 0;
@@ -29,6 +30,15 @@ uint64 VirtualVolumeManager::CreateVirtualVolume()
                 
     virtual_volume_map_.insert(make_pair(volume_id, sp));
     return volume_id;
+*/
+	GateEvent* gate_event = GSingle(DataManager).SelectServer();
+	if(nullptr == gate_event)
+	{
+		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == gate_event");
+		return false;
+	}
+	VirtualVolume* virtual_volume = new VirtualVolume;
+	
 }
 
 shared_ptr<VirtualVolume>& VirtualVolumeManager::GetVirtualVolume(uint64 virtual_volume_id)

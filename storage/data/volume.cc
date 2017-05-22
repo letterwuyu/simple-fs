@@ -13,16 +13,7 @@ Volume::comminute_type Volume::Comminute(size_t orgin, void* data, size_t count)
         {
         	Unit* punit = GSingle(UnitManager).CreateUnit();
             Units_.push_back(punit);
-			std::ostringstream vos(GSingle(DBManager).Get(std::to_string(id_)));
-			if(vos.str().empty())
-			{
-				vos << punit->GetId();
-			}
-			else
-			{
-				vos << " " << punit->GetId();
-			}
-			GSingle(DBManager).Put(std::to_string(id_), vos.str());
+			GSingle(MongoDBCXXManager).GetDB().AddUnitForVolume(GetName(), punit->GetId());
         }
    	}
     comminute_type coms;

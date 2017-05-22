@@ -1,50 +1,24 @@
-#ifndef STORAFE_MANAGER
-#define STORAGE_MANAGER
+#ifndef _SERVER_MANAGER_H__
+#define _SERVER_MANAGER_H__
 #include <vector>
 #include <random>
 #include "../common/net/libevent_socket.h"
 
-struct StorageInfo
+struct ServerInfo
 {
-	SocketEvent* socket_event_;
+	GateEvent* socket_event_;
+	int32_t server_id;
 };
 
-class StorageManager {
+class ServerManager {
 public:
-	StorageManager() = default;
-	void AddInfo(StorageInfo& info)
-	{
-		infos.push_back(info);
-	}
-	void DeleteInfo(StorageInfo& info)
-	{
-		for(auto it = infos_.begin(); it != infos_.end(); ++it)
-		{
-			if(*it == info)
-			{
-				it = infos_.erase(it);
-			}
-		}
-	}
-	std::vector<StorageInfo>& GetInfos()
-	{
-		return infos_;
-	}
-	SocketEvent* SelectServer()
-	{
-		if(infos.empty())
-			return NULL;
-		std::default_random_engin random;
-		std::uniform_int_distribution<int> dis(0, infos_.size());
-		return infos_[dis(random)].socket_event_;
-	}
-	size_t ServerNum()
-	{
-		infos_.size();
-	}
+	typedef std::list<DataInfo*> ServerList;
+	DataManager() = default;
+	void 					AddServer(ServerInfo& info)
+	void 					DeleteServer(int32_t server_id);
+	const ServerInfo* 		SelectServer();
 private:
-	std::vector<StorageInfo> infos_;
+	ServerList servers_;
 };
 
-#endif //STORAGE_MANAGER
-
+#endif //_SERVER_MANAGER_H__

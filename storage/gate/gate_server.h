@@ -1,32 +1,82 @@
-#ifndef GATE_SERVER_H
-#define GATE_SERVER_H
-#include "global.h"
+#ifndef _GATE_SERVER_H__
+#define _GATE_SERVER_H__
 
-class GateSocket:public SocketEvent {
-public:
-	GateSocket();
-	void ReadHandle(struct bufferevent* bev);
-	typedef std::unordered_map<uint32, function<bool(void*, void*)> > HandleMap;
-public:
-	static bool InitHandleMap();
+#include "../../common/net/libevent_network.h"
+#include "../../common/imp/common_thread.h"
+#include "data_event.h"
 
-	StaticHandle(DG_HandShake);
-	StaticHandle(CG_CreateVirtualVolume);
-	StaticHandle(CG_LoadVirtualVolume);
-	StaticHandle(CG_UpdateVirtualVolume);	
-	
-private:
-	PackageAnalysis package_analysis_;
-	static void HandleNetPack(void* header);
-	static HandleMap handle_map_;	
-};
+#include <funtional>
+#include <vector>
+#include <map>
 
-class GateServer:public MainEvent, public commonThread {
+using namespace net;
+
+class GateServer:public EventMain, public CommonThread {
 public:
+	GateServer();
+	~GateServer();
+public:
+	typedef std::funtion<bool(void*, void*)> HandleType;
+	typedef std::unordered_map<int32_t, HandleType> HandleMap;
 	void ListenHandle(struct bufferevent *bev);
-	void Run();
+	void Run(void);
+public:
+	static void NetHandle(void* net_pack);
 private:
-	vector<shared_ptr<GateSocket>> sockets_;
+	static bool SendMessage(void* event, void* data, size_t size);
+	static GateEvent* Connection(const std::string& ip, int32_t port);
+	static void RegisterProcess(void);
+
+	static bool GDCreateVolume(void* event, void* data);
+	static bool GDDeleteVolume(void* event, void* data);
+	static bool GDUpdateVolume(void* event, void* data);
+	
+	static bool CDReadVolume(void* event, void* data);	
+private:
+	static HandleMap handle_map_;
+	std::vector<GateEvent*> events_;
+	GateEvent* GateLink;
 };
 
-#endif //GATE_SERVER_H
+#fndef _GATE_SERVER_H__
+#define _GATE_SERVER_H__
+
+#include "../../common/net/libevent_network.h"
+#include "../../common/imp/common_thread.h"
+#include "data_event.h"
+
+#include <funtional>
+#include <vector>
+#include <map>
+
+using namespace net;
+
+class GateServer:public EventMain, public CommonThread {
+public:
+	GateServer();
+	~GateServer();
+public:
+	typedef std::funtion<bool(void*, void*)> HandleType;
+	typedef std::unordered_map<int32_t, HandleType> HandleMap;
+	void ListenHandle(struct bufferevent *bev);
+	void Run(void);
+public:
+	static void NetHandle(void* net_pack);
+private:
+	static bool SendMessage(void* event, void* data, size_t size);
+	static GateEvent* Connection(const std::string& ip, int32_t port);
+	static void RegisterProcess(void);
+
+	static bool CGCreateVirtualVolume(void* event, void* data);
+	static bool CGDeleteVirtualVolume(void* event, void* data);
+	static bool CGUpdateVirtualVolume(void* event, void* data);
+	
+	static bool CGReadVolume(void* event, void* data);	
+private:
+	static HandleMap handle_map_;
+	std::vector<GateEvent*> events_;
+};
+
+#endif //_GATE_SERVER_H__
+#endif //_GATE_SERVER_H__
+

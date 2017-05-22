@@ -7,10 +7,10 @@ class VirtualVolumeManager {
 public:
 	VirtualVolumeManager();
 	~VirtualVolumeManager();
-	uint64 CreateVirtualVolume();
-	shared_ptr<VirtualVolume>& GetVirtualVolume(uint64 volume_id);
+	bool CreateVirtualVolume(const std::string& virtual_volume_name);
+	shared_ptr<VirtualVolume>& GetVirtualVolume(const std::string& virtual_volume_name);
 private:
-	typedef map<uint64, shared_ptr<VirtualVolume> > VirtualVolumeMap;
-	VirtualVolumeMap virtual_volume_map_;	
+	typedef map<std::string, VirtualVolume*> VirtualVolumeMap;
+	VirtualVolumeMap virtual_volume_map_;
 };
 #endif //VIRTUAL_VOLUMME_MANiAGER_H

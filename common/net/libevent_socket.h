@@ -22,7 +22,7 @@ namespace net{
 		virtual void ReadHandle(struct bufferevent *bev) = 0;
 		virtual void WriteHandle(struct bufferevent *bev) = 0;
 		virtual void EventHandle(struct bufferevent *bev)= 0; 
-		void Write(void* buffer, size_t size); 
+		int Write(void* buffer, size_t size); 
 	private:
 		struct bufferevent *_buffer;
 	};

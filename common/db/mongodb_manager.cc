@@ -49,7 +49,7 @@ bool MongoDBManager::CreateServerForVirtual(const std::string& virtual_volume_na
               << "servers" << server_id;
 	auto collection = conn_[collections_[VolumeVirtual]];
     collection.insert_one(build_doc.view());
-    LOGInfo("MongoDBManager::CreateServerForVirtual add server : " << server << "for virtual_volume" << virtual_volume_name);
+    LogInfo("MongoDBManager::CreateServerForVirtual add server : " << server << "for virtual_volume" << virtual_volume_name);
     return true;
 }
 
@@ -60,7 +60,7 @@ bool MongoDBManager::DeleteServerForVirtual(const std::string& virtual_volume_na
               << "servers" << server_id;
     auto collection = conn_[collections_[VolumeVirtual]];
     collection.delete_one(delete_doc.view());
-    LOGInfo("MongoDBManager::CreateServerForVirtual delete server : " << server << "from virtual_volume" << virtual_volume_name);
+    LogInfo("MongoDBManager::CreateServerForVirtual delete server : " << server << "from virtual_volume" << virtual_volume_name);
     return true;
 }
 
@@ -71,7 +71,7 @@ bool MongoDBManager::AddUnitForVolume(const std::string& volume_name, uint64_t& 
               << "unit" << unit_id;
     auto collection = conn_[collections_[Volume]];
     collection.insert_one(build_doc.view());
-    LOGInfo("MongoDBManager::AddUnitForVolume add unit : " << unit_id << "for volume" << volume_name);
+    LogInfo("MongoDBManager::AddUnitForVolume add unit : " << unit_id << "for volume" << volume_name);
     return true;
 }
 

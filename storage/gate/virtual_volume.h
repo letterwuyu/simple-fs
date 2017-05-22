@@ -1,26 +1,16 @@
 #ifndef VIRTUAL_VOLUME_H
 #define VIRTUAL_VOLUME_H
 #include "global.h"
+#include "StorageManager.h"
 
 class VirtualVolume {
 public:
-	VirtualVolume();
-	bool SetVolumeId(uint64 volume_id)
-	{
-		volume_id_;
-		return true;		
-	}
-	bool AddServer(uint64 server_id)
-	{
-		servers_id_.push_back(server_id);
-		return true;
-	}
-	vector<uint64>& GetServers()
-	{
-		return servers_id_;
-	}
+	typedef std::list<ServerInfo*> ServerList;
+	VirtualVolume() = default;
+	bool 					AddServer(ServerInfo* server)
+	bool 					DeleteServer(int32_t server_id);
+	const ServerList        GetServerList();
 private:
-	vector<uint64> servers_id_;
-	uint64 volume_id_;
+	ServerList servers_;
 };
 #endif //VIRTUAL_VOLUME_H
