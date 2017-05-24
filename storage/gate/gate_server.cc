@@ -19,7 +19,7 @@ void GateServer::NetHandle(void* net_pack)
 
 bool GateServer::SendMessage(void* event, void* data, size_t size)
 {
-	GateEvent* data_event = static_cast<GateEvent*>(event);
+	GateEvent* gate_event = static_cast<GateEvent*>(event);
 	data_event->Write(data, size);
 	return true;	
 }
@@ -80,55 +80,43 @@ bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 		return false;
 	}
 	CG_CreateVolumeMessage* pack = static_cast<GD_CreateVolumeMessage*>(data);
-	char volume_name[MaxVolumeNameSize];
-	memcpy(volume_name, pack->name_, MaxVolumeNameSize);
+	char virtual_volume_name[MaxVolumeNameSize];
+	memcpy(virtual_volume_name, pack->name_, MaxVolumeNameSize);
 	//数据最后一位赋值‘\0’ 防止内存越界
-	volume_name[MaxVolumeNameSize - 1] = '\0';
-	//创建volume
-	Volume* volume = GSingle(VolumeManager).CreateVolume(std::string(volume));
-	DG_CreateVolumeMessage msg;
-	if(nullptr == volume)
+	virtual_volume_name[MaxVolumeNameSize - 1] = '\0';
+	//创建virtualvolume
+	VirtualVolume* virtual_volume = GSingle(VirtualVolumeManager).CreateVolume(std::string(volume));
+	if(nullptr == virtual_volume)
 	{
-		LogError("GateServer::GDCreateVolume nullptr == volume");
+		LogError("GateServer::CGCreateVirtualVolume nullptr == virtual_volume");
+		GC_CreateVirtualVolumeMessage msg;
+		msg.header_.data_type_ = GC_CreateVirtualVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
 		msg.code_ = Return_Fail;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+		return false;
 	}
 	else
 	{
-		msg.code_ = Return_Succeed;
+		GD_CreateVolumeMessage msg;
+		msg.header_.data_type_ = GD_CreateVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+		strcpy(msg.name_, virtual_volume_name);
+		VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+		for(auto it = server_list.begin(); it != server_list.end(); ++it)
+		{
+			it->socket_event_->Write(static_cast<void*>(*it)->socket_event_, static_cast<void*>(&msg), sizeof(msg));
+		}
+		return true;
 	}
-	msg.header.data_type_ = DG_CreateVolume;
-	msg.header.data_size_ = sizeof(msg) - sizeof(GateNetHeader);
-	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-	return true;
 }
 
 //删除卷
 bool GateServer::GDDeleteVolume(void* event, void* data)
 {
-	if(nullptr == event || nullptr == data)
-	{
-		LogError("GateServer::DG_DeleteVolume nullptr == event || nullptr == data");
-		return false;
-	}
-	GD_DeleteVolumeMessage* pack = static_cast<DG_DeleteVolumeMessage*>(data);
-	char volume_name[MaxVolumeNameSize];
-    memcpy(volume_name, pack->name_, MaxVolumeNameSize);
-    //数据最后一位赋值‘\0’ 防止内存越界
-    volume_name[MaxVolumeNameSize] = '\0';
-	DG_DeleteVolumeMessage msg;
-	msg.header_.data_type_ = DG_DeleteVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(GateNetheader);
-	if(GSingle(VolumeManager).DeleteVolume(std::string(volume_name)))
-	{
-		msg.code_ = Return_Succeed;
-	}
-	else
-	{
-		msg.code_ = Return_fail;
-	}
-	SendMssage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-	return true;
+	//暂不实现
 }
+
 
 //写入卷
 //暂时先不实现该功能
@@ -139,48 +127,37 @@ bool GateServer::GDUpdateVolume(void* event, void* data)
 		LogError("GateServer::DGUpdateVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	DG_UpdateVolumeMessage msg;
-	msg.header_.data_type_ = DG_UpdateVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(GateNetHeader);
-	msg.code_ = Return_Succeed;
-	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 	return true;
 }
 
 //读取卷
-bool GateServer::CDReadVolume(void* event, void* data)
+bool GateServer::CGReadVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
 	{
-		LogError("GateServer::CDReadVolume nullptr == event || nullptr == data");
+		LogError("GateServer::CGReadVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	
-	CD_ReadVolumeMessage* pack = static_cast<CD_ReadVolumeMessage*>(data);
-	pack->name_[MaxVolumeNameSize - 1] = '/0';
-	Volume* volume = GSingle(VolumeManager).GetVolume(std::string(pack->name_));
-	if(nullptr == volume)
+	CG_ReadVirtualVolumeMessage* pack = static_cast<CG_ReadVolumeMessage*>(data);
+	VirtualVolume* virtual_volume = GSingle(VirtualVolumeManager).GetVirtualVolume(std::string(pack->name_));
+	if(nullptr == virtual_volume)
 	{
-		LogError("GateServer::CDReadVolume nullptr == volume");
-		DC_ReadVolume msg;
-		msg.header_.data_type_ = DC_ReadVolume;
-		msg.header_.data_size_ = sizeof(msg) - sizeof(GateNetHeader);
-		strcmp(msg.name_, pack->name_);
+		GC_ReadVirtualVolumeMessage msg;
+		msg.header_.data_type_ = CG_ReadVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
 		msg.code_ = Return_Fail;
-		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-		return false; 
+		SendMessage(static_cast<void>(event), static_cast<void>(&msg), sizeof(msg));
+		return false;
 	}
 	else
 	{
-		size_t size = sizeof(msg) + pack->size_ * sizeof(char);
-		DC_ReadVolume* msg = static_cast<DC_ReadVolume*>(malloc(size));
-		msg->header_.data_type_ = DC_ReadVolume;
-		msg->header_.data_size_ = size = sizeof(GateNetHeader);
-		strcmp(msg->name_, pack->name_);
-		volume->Read(pack->orgin_, msg->data_, pack->size_);
-		msg->size_ = pack->size_;
-		msg->orgin_ = pack->orgin_;
-		SendMessage(static_cast<void*>(event), static_cast<void*>(msg), size);
+		VirtualVolume::ServerList* server_list = virtual_volume.GetServerList();
+		GC_ReadVirtualVolume msg;
+		msg.header_.data_type_ = GC_ReadVirtualVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+		msg.code_ = Return_Succeed;
+		msg.id_ = *(server_list->begin())->server_id_;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 		return true;
 	}
 }

@@ -29,6 +29,7 @@ DEFINE_MESSAGE_END
 
 DEFINE_MESSAGE_BEGIN(GC_ReadVirtualVolume)
 	int32_t id_;
+	int32_t code_;
 	void Clear()
 	{
 		memset(this, 0, sizeof(*this));

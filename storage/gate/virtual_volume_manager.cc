@@ -5,7 +5,7 @@ VirtualVolumeManager::VirtualVolumeManager():
 
 VirtualVolumeManager::~VirtualVolumeManager() {}
 
-bool VirtualVolumeManager::CreateVirtualVolume(const std::string& virtual_volume_name)
+VirtualVolume* VirtualVolumeManager::CreateVirtualVolume(const std::string& virtual_volume_name)
 {
 /*
 	vector<uint64> servers = singleton<DataServerManager>::intance().GetServers();
@@ -31,20 +31,30 @@ bool VirtualVolumeManager::CreateVirtualVolume(const std::string& virtual_volume
     virtual_volume_map_.insert(make_pair(volume_id, sp));
     return volume_id;
 */
-	GateEvent* gate_event = GSingle(DataManager).SelectServer();
-	if(nullptr == gate_event)
+	ServerInfo* server = GSingle(DataManager).SelectServer();
+	if(nullptr == server)
 	{
 		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == gate_event");
 		return false;
 	}
 	VirtualVolume* virtual_volume = new VirtualVolume;
-	
+	if(nullptr == virtual_volume)
+	{
+		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == virtual_volume");
+		return false; 
+	}
+	virtual_volume->AddServer(server);
+	return virtual_volume;
 }
 
-shared_ptr<VirtualVolume>& VirtualVolumeManager::GetVirtualVolume(uint64 virtual_volume_id)
+VirtualVolume* VirtualVolumeManager::GetVirtualVolume(const std::string& virtual_volume_name)
 {   
-	auto it = virtual_volume_map_.find(virtual_volume_id);
-    //  if(it != virtual_volume_map_.end())
+	auto it = virtual_volume_map_.find(virtual_volume_name);
+    if(virtual_volume_map_.end() == it)
+	{
+		LogError("VirtualVolumeManager::GetVirtualVolume virtual_volume_map_.end() == it");
+		return nullptr;
+	}
 	return it->second;
 }   
 
