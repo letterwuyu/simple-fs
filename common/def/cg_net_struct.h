@@ -31,6 +31,8 @@ DEFINE_MESSAGE_END
 
 DEFINE_MESSAGE_BEGIN(CG_ReadVirtualVolume)
 	char name_[MaxVolumeNameSize];
+	size_t orgin_;
+	size_t size_;
 	void Clear()
 	{
 		memset(this, 0, sizeof(*this));

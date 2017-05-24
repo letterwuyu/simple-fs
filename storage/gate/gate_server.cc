@@ -131,7 +131,7 @@ bool GateServer::GDUpdateVolume(void* event, void* data)
 }
 
 //读取卷
-bool GateServer::CGReadVolume(void* event, void* data)
+bool GateServer::CGReadVirtualVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
 	{
@@ -157,6 +157,9 @@ bool GateServer::CGReadVolume(void* event, void* data)
 		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
 		msg.code_ = Return_Succeed;
 		msg.id_ = *(server_list->begin())->server_id_;
+		strcpy(msg.name_, pack->name_);
+		msg.orgin_ = pack->orgin_;
+		msg.size_ = pack.size_;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 		return true;
 	}

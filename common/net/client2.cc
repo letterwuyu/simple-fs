@@ -38,6 +38,9 @@ int main()
 	strcpy(msg->a, "hello world");	
 	printf("============================\n");
 	send(clientfd, msg, size, 0);	
+//	char buffer[12];
+//	recv(clientfd, buffer, 12, 0);
+//	std::cout << buffer << std::endl;
 }
 
 

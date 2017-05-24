@@ -7,6 +7,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "test_message.h"
+
+#include <future>
+#include <thread>
+#include <queue>
+std::queue<std::promise<int>* > queue;
+//std::promise<int> promis;
 using namespace net;
 class MySocket:public SocketEvent, public PackageAnalysis {
 public:
@@ -45,6 +51,10 @@ void MySocket::HandleNetPack(void* header)
 		Message* msg = static_cast<Message*>(header);
 		std::cout << msg->a << std::endl;
 		std::cout << msg->s << std::endl;
+		//	promis.set_value(1001);
+		std::promise<int>* promis = queue.front();
+		queue.pop();
+		promis->set_value(1002);
 	}
 }
 
@@ -124,10 +134,15 @@ int main()
 {
 	MyMain mn;
 	mn.Init();
-	mn.Connection("127.0.0.1", 8889);
-
+	MySocket* my_socket = mn.Connection("127.0.0.1", 8889);
+	std::promise<int> promis;
+	std::future<int> result = promis.get_future();
+	queue.push(&promis);
+//	char  buffer[] = "hello world";
 	mn.Start();
 	std::cout << "-2" << std::endl;
+//	my_socket->Write(static_cast<void*>(buffer), 12);
+	std::cout << "fff:" << result.get() << std::endl;
 	mn.Join();
 	std::cout << "-1" << std::endl;
 }

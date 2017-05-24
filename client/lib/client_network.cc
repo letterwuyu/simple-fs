@@ -81,115 +81,277 @@ bool ClientNetwork::GCCreateVirtualVolume(void* event, void* data)
 		LogError("ClientNetwork::GDCreateVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	GD_CreateVolumeMessage* pack = static_cast<GD_CreateVolumeMessage*>(data);
-	char volume_name[MaxVolumeNameSize];
-	memcpy(volume_name, pack->name_, MaxVolumeNameSize);
-	//数据最后一位赋值‘\0’ 防止内存越界
-	volume_name[MaxVolumeNameSize - 1] = '\0';
-	//创建volume
-	Volume* volume = GSingle(VolumeManager).CreateVolume(std::string(volume));
-	DG_CreateVolumeMessage msg;
-	if(nullptr == volume)
+	GC_CreateVirtualVolumemessage* pack = static_cast<GC_CreateVirtualVolumeMessage*>(data);
+	if(promise_list_.empty())
 	{
-		LogError("ClientNetwork::GDCreateVolume nullptr == volume");
-		msg.code_ = Return_Fail;
+		LogError("ClientNetwork::GCCreateVirtualVolume promise_list_.empty()");
+		return false;
 	}
-	else
+	std::promise<PromiseInfo>* promise = promise_list_.front();
+	promise_list_.pop();
+	if(nullptr == promise)
 	{
-		msg.code_ = Return_Succeed;
+		LogError("ClientNetwork::GCCreateVirtualVolume nullptr == promise");
+		return false;
 	}
-	msg.header.data_type_ = DG_CreateVolume;
-	msg.header.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
-	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+	promise->set_value(&pack->code);
 	return true;
 }
 
 //删除卷
-bool ClientNetwork::GDDeleteVolume(void* event, void* data)
+bool ClientNetwork::GCDeleteVirtualVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
 	{
-		LogError("ClientNetwork::DG_DeleteVolume nullptr == event || nullptr == data");
+		LogError("ClientNetwork::GCDeleteVirtualVolume nullptr == event || nullptr == data");
 		return false;
+
 	}
-	GD_DeleteVolumeMessage* pack = static_cast<DG_DeleteVolumeMessage*>(data);
-	char volume_name[MaxVolumeNameSize];
-    memcpy(volume_name, pack->name_, MaxVolumeNameSize);
-    //数据最后一位赋值‘\0’ 防止内存越界
-    volume_name[MaxVolumeNameSize] = '\0';
-	DG_DeleteVolumeMessage msg;
-	msg.header_.data_type_ = DG_DeleteVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetheader);
-	if(GSingle(VolumeManager).DeleteVolume(std::string(volume_name)))
-	{
-		msg.code_ = Return_Succeed;
-	}
-	else
-	{
-		msg.code_ = Return_fail;
-	}
-	SendMssage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-	return true;
+    GC_DeleteVirtualVolumeMessage* pack = static_cast<GC_DeleteVirtualVolumeMessage*>(data);
+    if(promise_list_.empty())
+    {   
+        LogError("ClientNetwork::GCDeleteVirtualVolume promise_list_.empty()");
+        return false;
+    }
+    std::promise<PromiseInfo>* promise = promise_list_.front();
+    promise_list_.pop();
+    if(nullptr == promise)
+    {   
+        LogError("ClientNetwork::GCDeleteVirtualVolume nullptr == promise");
+        return false;
+    }
+    promise->set_value(&pack->code);
+    return true;
 }
 
 //写入卷
 //暂时先不实现该功能
-bool ClientNetwork::GDUpdateVolume(void* event, void* data)
+bool ClientNetwork::GCUpdateVirtualVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
 	{
-		LogError("ClientNetwork::DGUpdateVolume nullptr == event || nullptr == data");
+		LogError("ClientNetwork::GCUpdateVirtualVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	DG_UpdateVolumeMessage msg;
-	msg.header_.data_type_ = DG_UpdateVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
-	msg.code_ = Return_Succeed;
-	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-	return true;
+	GC_UpdateVirtualVolumeMessage* pack = static_cast<GC_UpdateVirtualVolumeMessage*>(data);
+    if(promise_list_.empty())
+    {
+        LogError("ClientNetwork::GCDeleteVirtualVolume promise_list_.empty()");
+        return false;
+    }
+    std::promise<PromiseInfo>* promise = promise_list_.front();
+    promise_list_.pop();
+    if(nullptr == promise)
+    {
+        LogError("ClientNetwork::GCDeleteVirtualVolume nullptr == promise");
+        return false;
+    }
+    promise->set_value(&pack->code);
+    return true;
 }
 
 //读取卷
-bool ClientNetwork::CDReadVolume(void* event, void* data)
+bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("ClientNetwork::CDReadVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	
-	CD_ReadVolumeMessage* pack = static_cast<CD_ReadVolumeMessage*>(data);
-	pack->name_[MaxVolumeNameSize - 1] = '/0';
-	Volume* volume = GSingle(VolumeManager).GetVolume(std::string(pack->name_));
-	if(nullptr == volume)
+	GC_ReadVirtualVolumeMessage* pack = static_cast<GC_ReadVirtualVolumeMessage*>(data);
+	if(Return_Fail == pack->code_)
 	{
-		LogError("ClientNetwork::CDReadVolume nullptr == volume");
-		DC_ReadVolume msg;
-		msg.header_.data_type_ = DC_ReadVolume;
-		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
-		strcmp(msg.name_, pack->name_);
-		msg.code_ = Return_Fail;
-		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-		return false; 
+		if(promise_list_.empty())
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume promise_list_.empty()");
+			return false;
+		}
+		std::promise<PromiseInfo>* promise = promise_list_.front();
+		promise_list_.pop();
+		if(nullptr == promise)
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume nullptr == promise");
+			return false;
+		}
+		promise->set_value(&pack_code_);
+		return false;
 	}
-	else
+	auto it = data_event_map_.find(pack->id_);
+	if(data_event_map_.end() != it)
 	{
-		size_t size = sizeof(msg) + pack->size_ * sizeof(char);
-		DC_ReadVolume* msg = static_cast<DC_ReadVolume*>(malloc(size));
-		msg->header_.data_type_ = DC_ReadVolume;
-		msg->header_.data_size_ = size = sizeof(DataNetHeader);
-		strcmp(msg->name_, pack->name_);
-		volume->Read(pack->orgin_, msg->data_, pack->size_);
-		msg->size_ = pack->size_;
-		msg->orgin_ = pack->orgin_;
-		SendMessage(static_cast<void*>(event), static_cast<void*>(msg), size);
-		return true;
+		LogError("ClientNetwork::GCReadVirtualVolume data_event_map_.end() != it");
+		return false;
 	}
+	CD_ReadVolumeMessage msg;
+	msg.header_.data_type_ = CD_ReadVolume;
+	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+	strcmp(msg.name, pack->name);
+	msg.orgin_ = pack->orgin_;
+	msg.size_ = pack->size_;
+	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));
+	return true;
+}
+
+bool ClientNetwork::DCReadVolume(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("ClientNetwork::DCReadVolume nullptr == event || nullptr == data");
+		return false;
+	}
+	DC_ReadVolumeMessage* pack = static_cast<DC_ReadVolumeMessage*>(data);
+	if(promise_list_.empty())
+	{
+		LogError("ClientNetwork::DCReadVolume promise_list_.empty()");
+		return false;
+	}
+	std::promise<PromiseInfo>* promise = promise_list_.front();
+	promise_list_.pop();
+	if(nullptr == promise)
+	{
+		LogError("ClientNetwork::DCReadVolume nullptr == promise");
+		return false;
+	}
+	promise->set_value(data);
+	return true;
 }
 
 ClientNetwork::ClientNetwork():
 	MainEvent("127.0.0.1", 8888), CommonThread() {}
 
 ClientNetwork::~ClientNetwork() {}
+
+bool ClientNetwork::CreateFile(const std::string& name)
+{
+	if(name.empty() || name.size() > MaxVolumeNameSize);
+	{
+		LogError("ClientNetwork::CreateFile name.empty() || name.size() > MaxVolumeNameSize");
+		return false;
+	}
+	if(nullptr == gate_event_)
+	{
+		LogError("ClientNetwork::CreateFile nullptr == gate_event_");
+		return false;
+	}
+	std::promise<PromiseInfo> promise;
+	std::future<PromiseInfo> futrue = promise.get_future();
+	promise_list_.push(&promise);
+	CG_CreateVirtualVolume msg;
+	strcpy(msg.name_, name.c_str());
+	msg.header_.data_type_ = CG_CreateVirtualVolume;
+	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+	SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
+	return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+}
+
+bool ClientNetwork::DeleteFile(const std::string& name)
+{
+	if(name.empty() || name.size() > MaxVolumeNameSize);
+    {   
+        LogError("ClientNetwork::DeleteFile name.empty() || name.size() > MaxVolumeNameSize");
+        return false;
+    }   
+    if(nullptr == gate_event_)
+    {   
+        LogError("ClientNetwork::DeleteFile nullptr == gate_event_");
+        return false;
+    }   
+    std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> futrue = promise.get_future();
+    promise_list_.push(&promise);
+    CG_CreateVirtualVolume msg;
+    strcpy(msg.name_, name.c_str());
+    msg.header_.data_type_ = CG_DeleteVirtualVolume;
+    msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
+    return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+}
+
+bool ClientNetwork::WriteFile(const std::string& name, size_t orgin, void* data, size_t size)
+{
+	if(name.empty() || name.size() > MaxVolumeNameSize)
+	{
+		LogError("ClientNetwork::WriteFile name.empty() || name.size() > MaxVolumeNameSize");
+		return false;
+	}
+	if(nullptr == gate_event_)
+	{
+		LogError("ClientNetwork::WriteFile nullptr == gate_event_");
+		return false;
+	}
+	size_t size = sizeof(CG_UpdateVirtualVolumeMessage) + sizeof(char) * size;
+	CG_UpdateVirtualVolumeMessage* msg = static_cast<CG_UpdateVirtualVOlume*>(malloc(size));
+	msg->header_.data_type_ = CG_UpdateVirtualVolume;
+	msg->header_.data_size_ = size - sizeof(DataNetHeader);
+	memcpy(msg->name_, name.c_str(), name.size());
+	memcpy(msg->data_, data, size);
+	msg->size_ = size;
+	msg->orgin_ = orgin_;
+	
+	std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> futrue = promise.get_future();
+    promise_list_.push(&promise);
+	
+	SendMessage(static_cast<void*>(gate_event_), static_cast<msg>, size);
+
+	return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+}
+
+bool ClientNetwork::ReadFile(const std::string& name, size_t orgin, void* data, size_t size)
+{
+	if(name.empty() || name.size() > define MaxVolumeNameSize)
+	{
+		LogError("ClientNetwork::ReadFile name.empty() || name.size() > define MaxVolumeNameSize");
+		return false;
+	}
+	if(nullptr == gate_event_)
+	{
+		LogError("ClientNetwork::ReadFile nullptr == gate_event_");
+		return false;
+	}
+	
+	CG_ReadVirtualVolumeMessage msg;
+	memcpy(msg.name_, name.c_str, name.size());
+	msg.orgin_ = orgin;
+	msg.size_ = size;
+	
+	std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> futrue = promise.get_future();
+    promise_list_.push(&promise);
+
+    SendMessage(static_cast<void*>(gate_event_), static_cast<msg>, size);
+	
+	data = futrue.get().data;
+	if(nullptr == data)
+	{
+		LogError("ClientNetwork::ReadFile nullptr == data");
+		return false;
+	}
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
