@@ -1,9 +1,17 @@
 #include "virtual_volume_manager.h"
+#include "../common/def/def.h"
 
 VirtualVolumeManager::VirtualVolumeManager():
 	virtual_volume_map_(VirtualVolumeManager::VirtualVolumeMap ()){}
 
-VirtualVolumeManager::~VirtualVolumeManager() {}
+VirtualVolumeManager::~VirtualVolumeManager() 
+{
+	for(auto it = virtual_volume_map_.begin(); it != virtual_volume_map_.end(); ++it)
+	{
+		if(nullptr != it->second)
+		delete it->second;
+	}
+}
 
 VirtualVolume* VirtualVolumeManager::CreateVirtualVolume(const std::string& virtual_volume_name)
 {

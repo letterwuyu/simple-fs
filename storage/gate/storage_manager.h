@@ -1,20 +1,22 @@
 #ifndef _SERVER_MANAGER_H__
 #define _SERVER_MANAGER_H__
-#include <vector>
-#include <random>
-#include "../common/net/libevent_socket.h"
+
+#include <list>
+
+#include "gate_event.h"
 
 struct ServerInfo
 {
 	GateEvent* socket_event_;
-	int32_t server_id_;
+	int server_id_;
 };
 
 class ServerManager {
 public:
 	typedef std::list<DataInfo*> ServerList;
-	DataManager() = default;
-	void 					AddServer(ServerInfo* info)
+	ServerManager() = default;
+	~ServerManager();
+	void 					AddServer(ServerInfo& info)
 	void 					DeleteServer(int32_t server_id);
 	const ServerInfo* 		SelectServer();
 private:

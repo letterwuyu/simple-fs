@@ -3,21 +3,23 @@
 
 #include "../../common/net/libevent_network.h"
 #include "../../common/imp/common_thread.h"
-#include "data_event.h"
+#include "gate_event.h"
 
-#include <funtional>
+#include <functional>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 using namespace net;
+//using namespace imp;
 
-class GateServer:public EventMain, public CommonThread {
+class GateServer:public MainEvent, public CommonThread {
 public:
 	GateServer();
 	~GateServer();
 public:
-	typedef std::funtion<bool(void*, void*)> HandleType;
-	typedef std::unordered_map<int32_t, HandleType> HandleMap;
+	typedef std::function<bool(void*, void*)> HandleType;
+	typedef std::unordered_map<int, HandleType> HandleMap;
 	void ListenHandle(struct bufferevent *bev);
 	void Run(void);
 public:
@@ -31,12 +33,12 @@ private:
 	static bool CGDeleteVirtualVolume(void* event, void* data);
 	static bool CGUpdateVirtualVolume(void* event, void* data);
 	
-	static bool CGReadVolume(void* event, void* data);	
+	static bool CGReadVolume(void* event, void* data);
+
+	static bool DGShake(void* event, void* data);
 private:
 	static HandleMap handle_map_;
 	std::vector<GateEvent*> events_;
 };
 
 #endif //_GATE_SERVER_H__
-#endif //_GATE_SERVER_H__
-

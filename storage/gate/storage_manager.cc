@@ -1,5 +1,14 @@
 #include "stroage_manager.h"
 
+ServerManager::~ServerManager()
+{
+	for(auto it = servers_.begin(); it != servers_.end(); ++it)
+	{
+		if(nullptr != (*it))
+			delete *it;
+	}
+}
+
 void ServerManager::AddServer(ServerInfo& info)
 {
 	ServerInfo* server_info = new ServerInfo;
@@ -12,7 +21,7 @@ void ServerManager::AddServer(ServerInfo& info)
 	servers_.push_back(server_info);
 }
 
-void ServerManager::DeleteServer(int32_t server_id)
+void ServerManager::DeleteServer(int server_id)
 {
 	for(auto it = servers_.begin(); it != servers_.end(); ++it)
 	{

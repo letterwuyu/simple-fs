@@ -4,7 +4,7 @@
 
 class MongoDBCXXManager {
 public:
-	MonogDBCXXManager();
+	MongoDBCXXManager();
 	~MongoDBCXXManager();
 	MongoDBManager& GetVirtualDB();
 	MongoDBManager& GetDB();

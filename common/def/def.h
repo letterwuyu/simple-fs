@@ -1,5 +1,5 @@
-#ifndef DEF_H
-#define DEF_H
+#ifndef _DEF_H__
+#define _DEF_H__
 
 //package
 #define DEFINE_MESSAGE_BEGIN(type)           \
@@ -38,15 +38,13 @@
 #define LogError 	LOGE
 #define LogAlarm 	LOGA
 #define LogFatal	LOGF
-#endif //DEF_H
-
 
 //type
 
-#define int32_t  sint32
-#define int64_t  sint64
-#define uint32_t uint32
-#define uint64_t uint64
+//#define int32_t  sint32
+//#define int64_t  sint64
+//#define uint32_t uint32
+//#define uint64_t uint64
 
 //handle
 #define Client_Handle(type) ClientProcess_##type(void *pserv, void* pdev, void* pdata)
@@ -64,4 +62,4 @@
 
 #define MaxVolumeNameSize 100  //卷名称最大长度
 
-#endif //DEF_H
+#endif //_DEF_H__

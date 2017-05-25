@@ -1,5 +1,5 @@
-#ifndef _SINGLETON_H_
-#define _SINGLETON_H_
+#ifndef _SINGLETON_H__
+#define _SINGLETON_H__
 namespace imp {
 	template <typename T>
 	class Singleton {
@@ -22,4 +22,4 @@ namespace imp {
 	};
 	template <typename T> typename Singleton<T>::object_creator Singleton<T>::create_object_;
 }
-#endif /* _SINGLETON */
+#endif /* _SINGLETON_H__ */

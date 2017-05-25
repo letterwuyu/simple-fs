@@ -5,6 +5,7 @@ enum DGNetType {
 	DG_CreateVolume,
 	DG_DeleteVolume,
 	DG_UpdateVolume,
+	DG_Shake,
 	DG_Max
 };
 #endif //_DG_NET_DEF_H__

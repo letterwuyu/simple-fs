@@ -1,11 +1,14 @@
 #include "gate_server.h"
 #include "../../common/log4z/log4z.h"
+#include "../../common/def/def.h"
+#include "../../common/def/gc_net_struct.h"
+#include "../../common/def/gd_net_struct.h"
 
 GateServer::HandleMap GateServer::handle_map_;
 
 void GateServer::NetHandle(void* net_pack)
 {
-	CommonPackage com_pack = static_cast<CommonPackage>(net_pack);
+	CommonPackage* com_pack = static_cast<CommonPackage*>(net_pack);
 /*
 	NetGateHeader* net_header = static_cast<NetGateHeader*>(com_pack->GetGate());
 	if(net_header->data_type_ <= NetTypeMin || net_header->data_type >= NetTypeMax)
@@ -65,12 +68,15 @@ GateEvent* GateServer::Connection(const std::string& ip, int32_t port)
 //注册
 void GateServer::RegisterProcess(void)
 {
-	handle_map_.insert(make_pair(CG_CreateVirtualVolume, GateServer::CGCreateVirtualVolume));
-	handle_map_.insert(make_pair(CG_DeleteVirtualVolume, GateServer::CGDeleteVirtualVolume));
-	handle_map_.insert(make_pair(CG_UpdateVirtualVolume, GateServer::CGUpdateVirtualVolume));
+	handle_map_.insert(std::make_pair(CG_CreateVirtualVolume, GateServer::CGCreateVirtualVolume));
+	handle_map_.insert(std::make_pair(CG_DeleteVirtualVolume, GateServer::CGDeleteVirtualVolume));
+	handle_map_.insert(std::make_pair(CG_UpdateVirtualVolume, GateServer::CGUpdateVirtualVolume));
 
-	handle_map_.insert(make_pair(CG_ReadVirtualVolume, GateServer::CGReadVirtualVolume));
+	handle_map_.insert(std::make_pair(CG_ReadVirtualVolume, GateServer::CGReadVirtualVolume));
+
+	handle_map_.insert(std::make_pair(DG_Shake, GateServer::DGShake));
 }
+
 //创建卷
 bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 {
@@ -98,16 +104,26 @@ bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 	}
 	else
 	{
-		GD_CreateVolumeMessage msg;
-		msg.header_.data_type_ = GD_CreateVolume;
-		msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
-		strcpy(msg.name_, virtual_volume_name);
-		VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
-		for(auto it = server_list.begin(); it != server_list.end(); ++it)
 		{
-			it->socket_event_->Write(static_cast<void*>(*it)->socket_event_, static_cast<void*>(&msg), sizeof(msg));
+			GD_CreateVolumeMessage msg;
+			msg.header_.data_type_ = GD_CreateVolume;
+			msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+			memcpy(msg.name_, virtual_volume_name, MaxVolumeNameSize);
+			VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+			for(auto it = server_list.begin(); it != server_list.end(); ++it)
+			{
+				it->socket_event_->Write(static_cast<void*>(*it)->socket_event_, static_cast<void*>(&msg), sizeof(msg));
+			}
 		}
-		return true;
+		
+		{
+			GC_CreateVirtualVolumeMessage msg;
+        	msg.header_.data_type_ = GC_CreateVirtualVolume;
+        	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+        	msg.code_ = Return_Succeed;
+        	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));	
+			return true;
+		}
 	}
 }
 
@@ -165,8 +181,37 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 	}
 }
 
+bool GateServer::DGShake(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("GateServer::DGShake");
+		return false;
+	}
+	DGShakeMessage* pack = static_cast<DGShageMessage*>(data);
+	ServerInfo server_info;
+	server_info.socket_event = static_cast<GateEvent*>(event);
+	server_info.server_id = pack->id_;
+	GSingle(ServerManager).AddServer(server_info);
+	return true;
+}
+
 GateServer::GateServer():
 	MainEvent("127.0.0.1", 8888), CommonThread() {}
 
 GateServer::~GateServer() {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

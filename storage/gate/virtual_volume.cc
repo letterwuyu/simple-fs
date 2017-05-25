@@ -6,7 +6,7 @@ bool VirtualVolume::AddServer(ServerInfo* server)
 	return true;
 }
 
-bool VirtualVolume::DeleteServer(int32_t server_id)
+bool VirtualVolume::DeleteServer(int server_id)
 {
 	for(auto it = servers_.begin(); it != servers_.end(); ++it)
 	{

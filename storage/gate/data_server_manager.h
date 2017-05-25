@@ -1,5 +1,5 @@
-#ifndef DATA_SERVER_MANAGER_H
-#define DATA_SERVER_MANAGER_H
+#ifndef _DATA_SERVER_MANAGER_H__
+#define _DATA_SERVER_MANAGER_H__
 
 #include "../common/imp/singleton.h"
 #include "../common/log/log4z.h"

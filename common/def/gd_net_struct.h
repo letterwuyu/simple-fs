@@ -1,4 +1,4 @@
-#include "def"
+#include "def.h"
 #include "gd_net_def.h"
 
 //创建卷
@@ -25,4 +25,8 @@ DEFINE_MESSAGE_BEGIN(GD_UpdateVolume)
 	size_t orgin_;
 	size_t size_;
 	char   buffer[0];
+	void Clear()
+	{
+		memset(this, 0, sizeof(*this));
+	}
 DEFINE_MESSAGE_END

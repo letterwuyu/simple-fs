@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 #include <bsoncxx/array/view.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
@@ -19,6 +20,7 @@ using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 using bsoncxx::builder::stream::open_document;
 using bsoncxx::builder::stream::close_document;
+using namespace bsoncxx;
 
 enum Collection
 {
@@ -35,12 +37,12 @@ public:
 //	bool DeleteVirtualVolume(const std::string virtual_volume_name);
 	bool CreateServerForVirtual(const std::string& virtual_volume_name, int server_id);
 	bool DeleteServerForVirtual(const std::string& virtual_volume_name, int server_id);
-	bool AddUnitForVolume(const std::string& volume_name, size_t& unit_id);
-	bool GetUnitForVolume(const std::string& volume_name, std::vector<uint64_t>& units);
+	bool AddUnitForVolume(const std::string& volume_name, int unit_id);
+	bool GetUnitForVolume(const std::string& volume_name, std::vector<int>& units);
 private:
 	mongocxx::client conn_;
 	mongocxx::instance inst_;
 	std::string db_name_;
-	std::unordered_map<Collection, std::string> collections_;
+	std::unordered_map<int, std::string> collections_;
 };
 #endif //_MONGODB_MANAGER_H__
