@@ -13,7 +13,7 @@ namespace imp {
 		};
 		static object_creator create_object_;
 	public:
-		static T* intance()
+		static T* instance()
 		{
 			static T obj;
 			create_object_.do_nothing();

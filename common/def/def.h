@@ -25,7 +25,7 @@
 #define StaticHandle(type) static bool Process##type(void* event, void* data)
 #define ClassHandle(cls, type) cls::Process##type(void* event, void* data)
 
-#define GSingle(type) singleton<type>::intance()
+#define GSingle(type) Singleton<type>::instance()
 
 #define GET_TYPE(type) type.header_.data_type_
 #define GET_SIZE(type) type.header_.data_size_

@@ -13,8 +13,8 @@ public:
 	bool Get(const std::string& key, std::string& value);
 	void Delete(const std::string& key)
 */
-	bool CreateUnit(uint64_t unit_id);
-	bool DeleteUnit(uint64_t unit_id);
+	bool CreateUnit(int unit_id);
+	bool DeleteUnit(int unit_id);
 private:
 	leveldb::DB* db_;
 	leveldb::Status status_;	

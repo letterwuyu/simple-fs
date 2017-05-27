@@ -1,16 +1,19 @@
-#ifndef UNIT_MANAGER_H
-#define UNIT_MANAGER_H
+#ifndef _UNIT_MANAGER_H__
+#define _UNIT_MANAGER_H__
+
+#include <unordered_map>
+
 #include "unit.h"
 
 class UnitManager {
-
 public:
-	typedef std::unordered_map<uint64, Unit*> UnitMap;
+	typedef std::unordered_map<int, Unit*> UnitMap;
 	UnitManager();
 	~UnitManager();
 	Unit* 			CreateUnit();
-	bool   			DeleteUnit(uint64 unit_id);
+	bool   			DeleteUnit(int unit_id);
 private:
 	UnitMap unit_map_;
 };
-#endif //UNIT_MANAGER_H
+#endif //_UNIT_MANAGER_H__
+

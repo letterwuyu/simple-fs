@@ -1,4 +1,6 @@
-#include "stroage_manager.h"
+#include "storage_manager.h"
+#include "../../common/def/def.h"
+#include "../../common/log4z/log4z.h"
 
 ServerManager::~ServerManager()
 {
@@ -27,7 +29,7 @@ void ServerManager::DeleteServer(int server_id)
 	{
 		if(nullptr == *it)
 			continue;
-		if((*it)->server_id == server_id)
+		if((*it)->server_id_ == server_id)
 		{
 			delete *it;
 			servers_.erase(it);
@@ -36,11 +38,11 @@ void ServerManager::DeleteServer(int server_id)
 	}
 }
 
-const ServerInfo* ServerManager::SelectServer()
+ServerInfo* ServerManager::SelectServer()
 {
 	if(servers_.empty())
 		return nullptr;
-	return servers_[0];
+	return *servers_.begin();
 }
 
 

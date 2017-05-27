@@ -1,5 +1,5 @@
-#ifndef _CG_NET_DEF_H__
-#define _CG_NET_DEF_H__
+#ifndef _CG_NET_STRUCT_H__
+#define _CG_NET_STRUCT_H__
 #include "cg_net_def.h"
 
 DEFINE_MESSAGE_BEGIN(CG_CreateVirtualVolume)
@@ -39,4 +39,4 @@ DEFINE_MESSAGE_BEGIN(CG_ReadVirtualVolume)
 	}
 DEFINE_MESSAGE_END
 
-#endif //_CG_NET_DEF_H__
+#endif //_CG_NET_STRUCT_H__

@@ -1,10 +1,20 @@
 #include "unit.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
-Unit::Unit(const std::string& name, uint64 id): name_(name), id_(id), size_(0) {}
+#include "../../common/db/leveldb_manager.h"
+#include "../../common/def/def.h"
+#include "../../common/imp/singleton.h"
+//#include "../../common/db/leveldb_manager.h"
+
+using namespace imp;
+
+Unit::Unit(const std::string& name, int id): name_(name), id_(id), size_(0) {}
 
 Unit::~Unit() {}
 
-bool Unit::Write(size_t orign, void* buffer, size_t count)
+bool Unit::Write(size_t orgin, void* buffer, size_t count)
 {
 	int file_handle = open(name_.c_str(), O_WRONLY);
     lseek(file_handle, orgin, SEEK_SET);
@@ -31,16 +41,17 @@ bool Unit::Create()
 
 bool Unit::Delete()
 {
-	GSingle(LevelDBManger).Delete(id_);
+	GSingle(LevelDBManager)->DeleteUnit(id_);
 	remove(name_.c_str());
 	return true;
 }
-uint64 Unit::GetId()
+
+int Unit::GetId()
 {
 	return id_;
 }
 
-string Unit::GetName()
+std::string Unit::GetName()
 {
 	return name_;
 }

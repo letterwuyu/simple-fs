@@ -9,6 +9,7 @@ LogDir=../../common/log4z
 server: libevent_socket.o \
 		libevent_network.o \
 		common_thread.o \
+		common_package.o \
 		package_analysis.o \
 		mongodb_manager.o \
 		mongodb_cxx_manager.o \
@@ -19,20 +20,21 @@ server: libevent_socket.o \
 		virtual_volume.o \
 		virtual_volume_manager.o \
 		main.o
-	$(CXX) $(CXXFLAGS) $(NetDir)/libevent_socket.o \
-					   $(NetDir)/libevent_network.o \
-					   $(ImpDir)/common_thread.o \
-					   $(NetDir)/package_analysis.o \
-					   $(DBDir)/mongodb_manager.o \
-					   $(DBDir)/mongodb_cxx_manager.o \
-					   $(LogDir)/log4z.o \
+	$(CXX) $(CXXFLAGS) libevent_socket.o \
+					   libevent_network.o \
+					   common_thread.o  \
+                       common_package.o \
+					   package_analysis.o \
+					   mongodb_manager.o \
+					   mongodb_cxx_manager.o \
+					   log4z.o \
 					   gate_event.o \
                        gate_server.o \
                        storage_manager.o \
 					   virtual_volume.o \
                        virtual_volume_manager.o \
                        main.o \
-                       -o server -levent -lpthread 
+                       -o server -levent -lpthread -I/usr/local/include/bsoncxx/v_noabi -I/usr/local/include/mongocxx/v_noabi -std=c++11 -I/usr/local/include/mongocxx -lmongocxx -lbsoncxx
 main.o: main.cc 
 	$(CXX) $(CXXFLAGS) -c main.cc
 libevent_network.o: $(NetDir)/libevent_network.cc $(NetDir)/libevent_network.h
@@ -59,6 +61,8 @@ virtual_volume.o: virtual_volume.cc virtual_volume.h
 	$(CXX) $(CXXFLAGS) -c virtual_volume.cc
 virtual_volume_manager.o: virtual_volume_manager.cc virtual_volume_manager.h
 	$(CXX) $(CXXFLAGS) -c virtual_volume_manager.cc
+common_package.o: $(NetDir)/common_package.cc $(NetDir)/common_package.h
+	$(CXX) $(CXXFLAGS) -c $(NetDir)/common_package.cc
 clean:
 	rm *.o server
 

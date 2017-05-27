@@ -6,7 +6,7 @@ VolumeManager::~VolumeManager()
 {
 	for(auto it = volume_map_.begin(); it != volume_map_.end(); ++it)
 	{
-		if(NULL != it->second)
+		if(nullptr != it->second)
 			delete it->second;
 	}
 }
@@ -14,7 +14,7 @@ VolumeManager::~VolumeManager()
 Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 {
 	std::hash<std::string> hash_fn;
-	uint64 volume_id = hash_fn(volume_name);
+	int volume_id = hash_fn(volume_name);
 	Volume* vp = new Volume(volume_name, volume_id);
 	if(nullptr == vp)
 	{
@@ -27,19 +27,32 @@ Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 		LogError("VolumeManager::CreateVolume create volume fail");
 		return nullptr;
 	}
-	return vp;
+	return volume_map_.insert(std::make_pair(volume_name, vp)).second;
 }
 
 Volume* VolumeManager::GetVolume(const std::string& volume_name)
 {
-	 std::hash<std::string> hash_fn;
+/*	 std::hash<std::string> hash_fn;
      uint64 volume_id = hash_fn(volume_name);
 	 return GetVolume(volume_id);
+*/
+	auto it = volume_map_.find(volume_name);
+	if(volume_map_.end() == it)
+	{
+		LogError("VolumeManager::GetVolume volume_map_.end() == it");
+		return nullptr;
+	}
+	if(nullptr == it->second)
+	{
+		LogError("VolumeManager::GetVolume nullptr == it->second");
+		return nullptr;
+	}
+	return it->second;
 }
 
-Volume* VolumeManager::GetVolume(uint64 volume_id)
+Volume* VolumeManager::GetVolume(int volume_id)
 {
-	auto it = volume_map_.find(volume_id);
+/*	auto it = volume_map_.find(volume_id);
 	if(volume_map_.end() == it)
 	{
 		LogError("VolumeManager::GetVolume volume_map_.end()");
@@ -51,14 +64,16 @@ Volume* VolumeManager::GetVolume(uint64 volume_id)
 		return NULL;
 	}
 	return it->second;
+*/
+	return nullptr;
 }
 
 bool VolumeManager::DeleteVolume(const std::string& volume_name)
 {
 	
-	std::hash<std::string> hash_fn;
-    uint64 volume_id = hash_fn(volume_name);
-	auto it = volume_map_.find(volume_id);
+//	std::hash<std::string> hash_fn;
+//   uint64 volume_id = hash_fn(volume_name);
+	auto it = volume_map_.find(volume_name);
 	if(volume_map_.end() == it)
     {
         LogError("VolumeManager::GetVolume volume_map_.end()");

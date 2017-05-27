@@ -12,7 +12,7 @@ bool VirtualVolume::DeleteServer(int server_id)
 	{
 		if(nullptr == *it)
 			continue;
-		if((*it)->server_id == server_id)
+		if((*it)->server_id_ == server_id)
 		{
 			servers_.erase(it);
 			return true;
@@ -21,7 +21,7 @@ bool VirtualVolume::DeleteServer(int server_id)
 	return true;
 }
 
-const VirtualVolume::ServerList VirtualVolume::GetServerList()
+const VirtualVolume::ServerList VirtualVolume::GetServerList() const
 {
 	return servers_;
 }

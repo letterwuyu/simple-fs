@@ -10,7 +10,7 @@
 class Volume {
 public:
 	typedef std::vector<std::tuple<int, int, void*, size_t>> comminute_type;
-	Volume(const std::string& name, uint64 id);
+	Volume(const std::string& name, int id);
 	~Volume();
 public:
 	bool 		Write(size_t orgin, void* data, size_t count);
@@ -21,14 +21,14 @@ private:
 	bool 		ApplenUnit(void);
 public:
     const 		std::string& GetName(void) const;
-    uint64      GetId(void) const;
+    int         GetId(void) const;
 
 private:
 	comminute_type Comminute(size_t orgin, void* data, size_t count);	
 private:
 	std::vector<Unit*> units_;
 	std::string name_;
-	uint64      id_;
+	int         id_;
 };
 
 #endif /* _VOLUME_H_ */

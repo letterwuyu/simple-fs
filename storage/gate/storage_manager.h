@@ -13,12 +13,12 @@ struct ServerInfo
 
 class ServerManager {
 public:
-	typedef std::list<DataInfo*> ServerList;
+	typedef std::list<ServerInfo*> ServerList;
 	ServerManager() = default;
 	~ServerManager();
-	void 					AddServer(ServerInfo& info)
+	void 					AddServer(ServerInfo& info);
 	void 					DeleteServer(int32_t server_id);
-	const ServerInfo* 		SelectServer();
+	ServerInfo*		 		SelectServer();
 private:
 	ServerList servers_;
 };

@@ -1,16 +1,16 @@
-#include "dbmanager.h"
+#include "leveldb_manager.h"
 
 LevelDBManager::LevelDBManager()
 {
 	leveldb::Options options;
     options.create_if_missing = true;
-    status = leveldb::DB::Open(options, "./db", &db);
-    assert(status.ok());
+    status_ = leveldb::DB::Open(options, "./db", &db_);
+    assert(status_.ok());
 }
 
 LevelDBManager::~LevelDBManager()
 {
-	 delete *db;
+	 delete db_;
 }
 
 /*

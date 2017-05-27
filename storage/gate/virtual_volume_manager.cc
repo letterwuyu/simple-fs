@@ -1,5 +1,10 @@
 #include "virtual_volume_manager.h"
-#include "../common/def/def.h"
+#include "storage_manager.h"
+#include "../../common/def/def.h"
+#include "../../common/log4z/log4z.h"
+#include "../../common/imp/singleton.h"
+
+using namespace imp;
 
 VirtualVolumeManager::VirtualVolumeManager():
 	virtual_volume_map_(VirtualVolumeManager::VirtualVolumeMap ()){}
@@ -39,17 +44,17 @@ VirtualVolume* VirtualVolumeManager::CreateVirtualVolume(const std::string& virt
     virtual_volume_map_.insert(make_pair(volume_id, sp));
     return volume_id;
 */
-	ServerInfo* server = GSingle(DataManager).SelectServer();
+	ServerInfo* server = GSingle(ServerManager)->SelectServer();
 	if(nullptr == server)
 	{
 		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == gate_event");
-		return false;
+		return nullptr;
 	}
 	VirtualVolume* virtual_volume = new VirtualVolume;
 	if(nullptr == virtual_volume)
 	{
 		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == virtual_volume");
-		return false; 
+		return nullptr; 
 	}
 	virtual_volume->AddServer(server);
 	return virtual_volume;

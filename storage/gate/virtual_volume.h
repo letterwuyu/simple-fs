@@ -1,15 +1,15 @@
 #ifndef _VIRTUAL_VOLUME_H__
 #define _VIRTUAL_VOLUME_H__
-#include "global.h"
-#include "StorageManager.h"
+
+#include "storage_manager.h"
 
 class VirtualVolume {
 public:
 	typedef std::list<ServerInfo*> ServerList;
 	VirtualVolume() = default;
-	bool 					AddServer(ServerInfo* server)
+	bool 					AddServer(ServerInfo* server);
 	bool 					DeleteServer(int server_id);
-	const ServerList        GetServerList();
+	const ServerList        GetServerList() const;
 private:
 	ServerList servers_;
 };

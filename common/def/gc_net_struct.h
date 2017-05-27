@@ -30,7 +30,7 @@ DEFINE_MESSAGE_END
 DEFINE_MESSAGE_BEGIN(GC_ReadVirtualVolume)
 	int32_t id_;
 	int32_t code_;
-    char name_[define MaxVolumeNameSize];
+    char name_[MaxVolumeNameSize];
 	size_t orgin_;
 	size_t size_;
 	void Clear()

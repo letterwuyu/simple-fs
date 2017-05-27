@@ -1,5 +1,8 @@
 #include "common_package.h"
 #include "../../common/log4z/log4z.h"
+#include "../../common/def/def.h"
+
+using namespace zsummer::log4z;
 
 CommonPackage::CommonPackage(void* pevent, void* pdata)
 	:pevent_(pevent), pdata_(pdata) {}
@@ -13,7 +16,7 @@ void CommonPackage::SetEvent(void* pevent)
 		LogError("CommonPackage::SetEvent nullptr == pevent");
 		return;	
 	}
-	pevent_ = event;
+	pevent_ = pevent;
 }
 
 void* CommonPackage::GetEvent(void)

@@ -7,17 +7,19 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "test_message.h"
-
+#include "../log4z/log4z.h"
 #include <future>
 #include <thread>
 #include <queue>
 std::queue<std::promise<int>* > queue;
 //std::promise<int> promis;
 using namespace net;
+using namespace zsummer::log4z;
+
 class MySocket:public SocketEvent, public PackageAnalysis {
 public:
 //	MySocket(struct bufferevent *bev) : net::SocketEvent(bev) {}
-	MySocket():PackageAnalysis(MySocket::HandleNetPack) {};
+	MySocket():PackageAnalysis(nullptr, nullptr) {};
 	void ReadHandle(struct bufferevent *bev);
 	void WriteHandle(struct bufferevent *bev){}
 	void EventHandle(struct bufferevent *bev) {}
@@ -64,8 +66,8 @@ public:
 
 	void ListenHandle(struct bufferevent *bev)
 	{
-		_socket.SetBuffer(bev);
-		_socket.Init();
+//		_socket.SetBuffer(bev);
+//		_socket.Init();
 	}
 	
 	void Run()
@@ -82,7 +84,7 @@ private:
 
 MySocket* MyMain::Connection(const std::string& ip, int32_t port)
 {
-	evutil_socket_t sockfd;
+/*	evutil_socket_t sockfd;
 	int status, save_errno;
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
@@ -109,29 +111,30 @@ MySocket* MyMain::Connection(const std::string& ip, int32_t port)
 		std::cout << "k3------------------" << std::endl;
 		return nullptr;
 	}
-	
+*/	
 /*	struct bufferevent* bev = bufferevent_socket_new(_base, sockfd, BEV_OPT_CLOSE_ON_FREE);
 	struct event* ev_cmd = event_new(_base, STDIN_FILENO,  
                                       EV_READ | EV_PERSIST, cmd_msg_cb,  
                                       static_cast<void*>(bev));
 	event_add(ev_cmd, NULL);
 */
-	struct bufferevent* bev = bufferevent_socket_new(getBase(), sockfd, BEV_OPT_CLOSE_ON_FREE);
-	MySocket* data_event = new MySocket();
-	if(nullptr == data_event)
-	{
+//	struct bufferevent* bev = bufferevent_socket_new(getBase(), sockfd, BEV_OPT_CLOSE_ON_FREE);
+//	MySocket* data_event = new MySocket();
+//	if(nullptr == data_event)
+//	{
 //		LogError("DataServer::Connection nullptr == data_event");
-		std::cout << "k4----------------------" << std::endl;
-		return nullptr;
-	}
-	std::cout << "k5----------------------" << std::endl;
-	data_event->SetBuffer(bev);
-	data_event->Init();
-	return data_event;
+//		std::cout << "k4----------------------" << std::endl;
+//		return nullptr;
+//	}
+//	std::cout << "k5----------------------" << std::endl;
+//	data_event->SetBuffer(bev);
+//	data_event->Init();
+//	return data_event;
 }
 
 int main()
 {
+	ILog4zManager::GetInstance()->Start(); 
 	MyMain mn;
 	mn.Init();
 	MySocket* my_socket = mn.Connection("127.0.0.1", 8889);

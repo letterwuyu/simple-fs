@@ -1,17 +1,21 @@
-#ifndef VOLUME_MANAGER_H
-#define VOLUME_MANAGER_H
+#ifndef _VOLUME_MANAGER_H__
+#define _VOLUME_MANAGER_H__
+
+#include <unordered_map>
+#include <string>
+#include "volume.h"
 
 class VolumeManager {
 public:
-	typedef std::unordered_map<uint64, Volume*> VolumeMap;
+	typedef std::unordered_map<std::string, Volume*> VolumeMap;
 	VolumeManager();
 	~VolumeManager();
 	Volume*	CreateVolume(const std::string& volume_name);
 	Volume* GetVolume(const std::string& volume_name);
-	Volume* GetVolume(uint64 volume_id);
+	Volume* GetVolume(int volume_id);
 	bool    DeleteVolume(const std::string& volume_name);
 	bool    Loadvolume();
 private:
 	VolumeMap volume_map_;
 };
-#endif //VOLUME_MANAGER_H
+#endif //_VOLUME_MANAGER_H__

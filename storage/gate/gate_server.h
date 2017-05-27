@@ -26,13 +26,13 @@ public:
 	static void NetHandle(void* net_pack);
 private:
 	static bool SendMessage(void* event, void* data, size_t size);
-	static GateEvent* Connection(const std::string& ip, int32_t port);
+	GateEvent* Connection(const std::string& ip, int32_t port);
 	static void RegisterProcess(void);
 
 	static bool CGCreateVirtualVolume(void* event, void* data);
 	static bool CGDeleteVirtualVolume(void* event, void* data);
 	static bool CGUpdateVirtualVolume(void* event, void* data);
-	
+	static bool CGReadVirtualVolume(void* event, void* data);
 	static bool CGReadVolume(void* event, void* data);
 
 	static bool DGShake(void* event, void* data);
