@@ -3,27 +3,29 @@
 
 #include "../../common/net/libevent_network.h"
 #include "../../common/imp/common_thread.h"
-#include "data_event.h"
-#include "promise_info.g"
+#include "client_event.h"
+#include "promise_info.h"
 
-#include <funtional>
+#include <unordered_map>
+#include <functional>
 #include <vector>
 #include <map>
 #include <future>
 #include <thread>
 #include <queue>
 #include <list>
+
 using namespace net;
 
-class ClientNetwork:public EventMain, public CommonThread {
+class ClientNetwork:public MainEvent, public CommonThread {
 public:
 	ClientNetwork();
 	~ClientNetwork();
 public:
-	typedef std::funtion<bool(void*, void*)>        	HandleType;
+	typedef std::function<bool(void*, void*)>        	HandleType;
 	typedef std::unordered_map<int32_t, HandleType> 	HandleMap;
 	typedef std::queue<std::promise<PromiseInfo>* > 	PromiseList;
-	typedef std::unordered_map<ClientEvent*>            DataEventMap;
+	typedef std::unordered_map<int, ClientEvent*>            DataEventMap;
 
 	void ListenHandle(struct bufferevent *bev);
 	void Run(void);
@@ -31,10 +33,10 @@ public:
 	static void NetHandle(void* net_pack);
 private:
 	static bool SendMessage(void* event, void* data, size_t size);
-	static ClientEvent* Connection(const std::string& ip, int32_t port);
+	ClientEvent* Connection(const std::string& ip, int32_t port);
 	static void RegisterProcess(void);
 
-	static bool GCCreateVritualVolume(void* event, void* data);
+	static bool GCCreateVirtualVolume(void* event, void* data);
 	static bool GCDeleteVirtualVolume(void* event, void* data);
 	static bool GCUpdateVirtualVolume(void* event, void* data);
 	
@@ -49,7 +51,7 @@ public:
 private:
 	static HandleMap handle_map_;
 	static PromiseList promise_list_;
-	static ClientEvent gate_event_;
+	static ClientEvent* gate_event_;
 	static DataEventMap data_event_map_;
 
 	std::vector<ClientEvent*> events_;

@@ -26,8 +26,8 @@ using namespace bsoncxx;
 
 enum Collection
 {
-	VirtualVolume,
-	Volume
+	Collection_VirtualVolume,
+	Collection_Volume
 };
 
 class MongoDBManager {
@@ -43,7 +43,7 @@ public:
 	bool GetUnitForVolume(const std::string& volume_name, std::vector<int>& units);
 private:
 	mongocxx::client conn_;
-	mongocxx::instance inst_;
+	static mongocxx::instance inst_;
 	std::string db_name_;
 	std::unordered_map<int, std::string> collections_;
 };

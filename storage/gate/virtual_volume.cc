@@ -1,5 +1,15 @@
 #include"virtual_volume.h"
 
+VirtualVolume::VirtualVolume(const std::string& name)
+	: name_(name) {}
+
+VirtualVolume::~VirtualVolume() {}
+
+const std::string& VirtualVolume::GetName(void) const
+{
+	return name_;
+}
+
 bool VirtualVolume::AddServer(ServerInfo* server)
 {
 	servers_.push_back(server);

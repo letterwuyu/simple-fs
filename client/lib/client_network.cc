@@ -1,11 +1,26 @@
-#include "data_server.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include "client_network.h"
 #include "../../common/log4z/log4z.h"
+#include "../../common/def/def.h"
+#include "../../common/def/def_enum.h"
+#include "../../common/net/package_analysis.h"
+#include "../../common/net/common_package.h"
+#include "../../common/def/gc_net_struct.h"
+#include "../../common/def/cg_net_struct.h"
+#include "../../common/def/dc_net_struct.h"
+#include "../../common/def/cd_net_struct.h"
 
 ClientNetwork::HandleMap ClientNetwork::handle_map_;
+ClientNetwork::PromiseList ClientNetwork::promise_list_;
+ClientNetwork::DataEventMap ClientNetwork::data_event_map_;
+ClientEvent* ClientNetwork::gate_event_;
 
 void ClientNetwork::NetHandle(void* net_pack)
 {
-	CommonPackage com_pack = static_cast<CommonPackage>(net_pack);
+	CommonPackage* com_pack = static_cast<CommonPackage*>(net_pack);
 /*
 	NetDataHeader* net_header = static_cast<NetDataHeader*>(com_pack->GetData());
 	if(net_header->data_type_ <= NetTypeMin || net_header->data_type >= NetTypeMax)
@@ -14,7 +29,7 @@ void ClientNetwork::NetHandle(void* net_pack)
 		return;
 	}
 */
-	map_handle_[net_header->data_type](com_pack->GetEvent(), com_pack->GetData());
+	handle_map_[static_cast<NetDataHeader*>(com_pack->GetData())->data_type_](com_pack->GetEvent(), com_pack->GetData());
 }
 
 bool ClientNetwork::SendMessage(void* event, void* data, size_t size)
@@ -27,7 +42,7 @@ bool ClientNetwork::SendMessage(void* event, void* data, size_t size)
 ClientEvent* ClientNetwork::Connection(const std::string& ip, int32_t port)
 {
 	evutil_socket_t sockfd;
-	int status, save_errno;
+	int status;
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -52,7 +67,7 @@ ClientEvent* ClientNetwork::Connection(const std::string& ip, int32_t port)
 	}
 
 	struct bufferevent* bev = bufferevent_socket_new(getBase(), sockfd, BEV_OPT_CLOSE_ON_FREE);
-	ClientEvent* client_event = new ClientEvent();
+	ClientEvent* client_event = new ClientEvent(NetHandle);
 	if(nullptr == client_event)
 	{
 		LogError("ClientNetwork::Connection nullptr == client_event");
@@ -65,13 +80,13 @@ ClientEvent* ClientNetwork::Connection(const std::string& ip, int32_t port)
 //注册
 void ClientNetwork::RegisterProcess(void)
 {
-	handle_map_.insert(make_pair(GC_CreateVirtualVolume, ClientNetwork::CGCreateVirtualVolume));
-	handle_map_.insert(make_pair(GC_DeleteVirtualVolume, ClientNetwork::CGDeleteVirtualVolume));
-	handle_map_.insert(make_pair(GC_UpdateVirtualVolume, ClientNetwork::CGUpdateVirtualVolume));
+	handle_map_.insert(std::make_pair(GC_CreateVirtualVolume, ClientNetwork::GCCreateVirtualVolume));
+	handle_map_.insert(std::make_pair(GC_DeleteVirtualVolume, ClientNetwork::GCDeleteVirtualVolume));
+	handle_map_.insert(std::make_pair(GC_UpdateVirtualVolume, ClientNetwork::GCUpdateVirtualVolume));
 
-	handle_map_.insert(make_pair(GC_ReadVirtualVolume, ClientNetwork::GCReadVirtualVolume));
+	handle_map_.insert(std::make_pair(GC_ReadVirtualVolume, ClientNetwork::GCReadVirtualVolume));
 
-	handle_map_.insert(make_pair(DC_ReadVolume, ClientNetwork::DCReadVolume));
+	handle_map_.insert(std::make_pair(DC_ReadVolume, ClientNetwork::DCReadVolume));
 }
 //创建卷
 bool ClientNetwork::GCCreateVirtualVolume(void* event, void* data)
@@ -81,7 +96,7 @@ bool ClientNetwork::GCCreateVirtualVolume(void* event, void* data)
 		LogError("ClientNetwork::GDCreateVolume nullptr == event || nullptr == data");
 		return false;
 	}
-	GC_CreateVirtualVolumemessage* pack = static_cast<GC_CreateVirtualVolumeMessage*>(data);
+	GC_CreateVirtualVolumeMessage* pack = static_cast<GC_CreateVirtualVolumeMessage*>(data);
 	if(promise_list_.empty())
 	{
 		LogError("ClientNetwork::GCCreateVirtualVolume promise_list_.empty()");
@@ -94,7 +109,7 @@ bool ClientNetwork::GCCreateVirtualVolume(void* event, void* data)
 		LogError("ClientNetwork::GCCreateVirtualVolume nullptr == promise");
 		return false;
 	}
-	promise->set_value(&pack->code);
+	promise->set_value(&pack->code_);
 	return true;
 }
 
@@ -120,7 +135,7 @@ bool ClientNetwork::GCDeleteVirtualVolume(void* event, void* data)
         LogError("ClientNetwork::GCDeleteVirtualVolume nullptr == promise");
         return false;
     }
-    promise->set_value(&pack->code);
+    promise->set_value(&(pack->code_));
     return true;
 }
 
@@ -146,7 +161,7 @@ bool ClientNetwork::GCUpdateVirtualVolume(void* event, void* data)
         LogError("ClientNetwork::GCDeleteVirtualVolume nullptr == promise");
         return false;
     }
-    promise->set_value(&pack->code);
+    promise->set_value(&pack->code_);
     return true;
 }
 
@@ -173,7 +188,7 @@ bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 			LogError("ClientNetwork::GCReadVirtualVolume nullptr == promise");
 			return false;
 		}
-		promise->set_value(&pack_code_);
+		promise->set_value(&pack->code_);
 		return false;
 	}
 	auto it = data_event_map_.find(pack->id_);
@@ -184,8 +199,8 @@ bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 	}
 	CD_ReadVolumeMessage msg;
 	msg.header_.data_type_ = CD_ReadVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
-	strcmp(msg.name, pack->name);
+	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
 	msg.orgin_ = pack->orgin_;
 	msg.size_ = pack->size_;
 	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));
@@ -212,7 +227,7 @@ bool ClientNetwork::DCReadVolume(void* event, void* data)
 		LogError("ClientNetwork::DCReadVolume nullptr == promise");
 		return false;
 	}
-	promise->set_value(data);
+	promise->set_value(pack->data_);
 	return true;
 }
 
@@ -234,14 +249,14 @@ bool ClientNetwork::CreateFile(const std::string& name)
 		return false;
 	}
 	std::promise<PromiseInfo> promise;
-	std::future<PromiseInfo> futrue = promise.get_future();
+	std::future<PromiseInfo> future = promise.get_future();
 	promise_list_.push(&promise);
-	CG_CreateVirtualVolume msg;
+	CG_CreateVirtualVolumeMessage msg;
 	strcpy(msg.name_, name.c_str());
 	msg.header_.data_type_ = CG_CreateVirtualVolume;
-	msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 	SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
-	return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+	return Return_Fail != *static_cast<uint32_t*>(future.get().data_);
 }
 
 bool ClientNetwork::DeleteFile(const std::string& name)
@@ -257,14 +272,14 @@ bool ClientNetwork::DeleteFile(const std::string& name)
         return false;
     }   
     std::promise<PromiseInfo> promise;
-    std::future<PromiseInfo> futrue = promise.get_future();
+    std::future<PromiseInfo> future = promise.get_future();
     promise_list_.push(&promise);
-    CG_CreateVirtualVolume msg;
+    CG_CreateVirtualVolumeMessage msg;
     strcpy(msg.name_, name.c_str());
     msg.header_.data_type_ = CG_DeleteVirtualVolume;
-    msg.header_.data_size_ = sizeof(msg) - sizeof(DataNetHeader);
+    msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
     SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
-    return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+    return Return_Fail != *static_cast<uint32_t*>(future.get().data_);
 }
 
 bool ClientNetwork::WriteFile(const std::string& name, size_t orgin, void* data, size_t size)
@@ -279,27 +294,27 @@ bool ClientNetwork::WriteFile(const std::string& name, size_t orgin, void* data,
 		LogError("ClientNetwork::WriteFile nullptr == gate_event_");
 		return false;
 	}
-	size_t size = sizeof(CG_UpdateVirtualVolumeMessage) + sizeof(char) * size;
-	CG_UpdateVirtualVolumeMessage* msg = static_cast<CG_UpdateVirtualVOlume*>(malloc(size));
+	size_t ssize = sizeof(CG_UpdateVirtualVolumeMessage) + sizeof(char) * size;
+	CG_UpdateVirtualVolumeMessage* msg = static_cast<CG_UpdateVirtualVolumeMessage*>(malloc(size));
 	msg->header_.data_type_ = CG_UpdateVirtualVolume;
-	msg->header_.data_size_ = size - sizeof(DataNetHeader);
+	msg->header_.data_size_ = size - sizeof(NetDataHeader);
 	memcpy(msg->name_, name.c_str(), name.size());
 	memcpy(msg->data_, data, size);
 	msg->size_ = size;
-	msg->orgin_ = orgin_;
+	msg->orgin_ = orgin;
 	
 	std::promise<PromiseInfo> promise;
-    std::future<PromiseInfo> futrue = promise.get_future();
+    std::future<PromiseInfo> future = promise.get_future();
     promise_list_.push(&promise);
 	
-	SendMessage(static_cast<void*>(gate_event_), static_cast<msg>, size);
+	SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), ssize);
 
-	return Return_Fail != *static_cast<uint32_t*>(future.get().data);
+	return Return_Fail != *static_cast<uint32_t*>(future.get().data_);
 }
 
 bool ClientNetwork::ReadFile(const std::string& name, size_t orgin, void* data, size_t size)
 {
-	if(name.empty() || name.size() > define MaxVolumeNameSize)
+	if(name.empty() || name.size() > MaxVolumeNameSize)
 	{
 		LogError("ClientNetwork::ReadFile name.empty() || name.size() > define MaxVolumeNameSize");
 		return false;
@@ -311,17 +326,15 @@ bool ClientNetwork::ReadFile(const std::string& name, size_t orgin, void* data, 
 	}
 	
 	CG_ReadVirtualVolumeMessage msg;
-	memcpy(msg.name_, name.c_str, name.size());
+	strcpy(msg.name_, name.c_str());
 	msg.orgin_ = orgin;
 	msg.size_ = size;
 	
 	std::promise<PromiseInfo> promise;
-    std::future<PromiseInfo> futrue = promise.get_future();
+    std::future<PromiseInfo> future = promise.get_future();
     promise_list_.push(&promise);
-
-    SendMessage(static_cast<void*>(gate_event_), static_cast<msg>, size);
-	
-	data = futrue.get().data;
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), size);	
+	data = future.get().data_;
 	if(nullptr == data)
 	{
 		LogError("ClientNetwork::ReadFile nullptr == data");
@@ -330,10 +343,23 @@ bool ClientNetwork::ReadFile(const std::string& name, size_t orgin, void* data, 
 	return true;
 }
 
+void ClientNetwork::ListenHandle(struct bufferevent* bev)
+{
+	ClientEvent* client_event = new ClientEvent(NetHandle);
+	if(nullptr == client_event)
+	{
+		LogError("ClientNetwork::ListenHandle nullptr == data_event");
+		return;
+	}
+	events_.push_back(client_event);
+}
 
-
-
-
+void ClientNetwork::Run(void)
+{
+	Init();
+	gate_event_ = Connection(std::string("127.0.0.1"), 8888);
+	Loop();
+}
 
 
 

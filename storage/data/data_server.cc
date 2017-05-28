@@ -223,7 +223,22 @@ void DataServer::Run(void)
 {
 	Init();
 	gate_link = Connection(std::string("127.0.0.1"), 8888);
+	if(nullptr == gate_link)
+	{
+		LogError("DataServer::Run nullptr == gate_link");
+		return;
+	}
+	ShakeGate();
 	Loop();
+}
+
+void DataServer::ShakeGate(void)
+{
+	DG_ShakeMessage msg;
+	msg.header_.data_type_ = DG_Shake;
+	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	msg.id_ = 1;
+	SendMessage(static_cast<void*>(gate_link), static_cast<void*>(&msg), sizeof(msg));
 }
 
 

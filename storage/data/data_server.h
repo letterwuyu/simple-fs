@@ -22,6 +22,8 @@ public:
 	void ListenHandle(struct bufferevent *bev);
 	void Run(void);
 public:
+	void ShakeGate(void);
+public:
 	static void NetHandle(void* net_pack);
 private:
 	static bool SendMessage(void* event, void* data, size_t size);

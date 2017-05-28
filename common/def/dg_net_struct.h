@@ -31,6 +31,7 @@ DEFINE_MESSAGE_BEGIN(DG_UpdateVolume)
 	}
 DEFINE_MESSAGE_END
 
+//握手
 DEFINE_MESSAGE_BEGIN(DG_Shake)
     int32_t id_;
 	void Clear()

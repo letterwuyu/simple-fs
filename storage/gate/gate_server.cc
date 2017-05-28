@@ -95,6 +95,7 @@ void GateServer::RegisterProcess(void)
 //创建卷
 bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 {
+	std::cerr << "create virtual volume" << std::endl;
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("GateServer::GDCreateVolume nullptr == event || nullptr == data");
@@ -199,6 +200,7 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 
 bool GateServer::DGShake(void* event, void* data)
 {
+	LogInfo("GateServer::DGShake");
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("GateServer::DGShake");

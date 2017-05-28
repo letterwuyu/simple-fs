@@ -1,6 +1,6 @@
 #include "virtual_volume_manager.h"
 #include "storage_manager.h"
-//#include "../../common/db/mongodb_cxx_manager.h"
+#include "../../common/db/mongodb_cxx_manager.h"
 #include "../../common/def/def.h"
 #include "../../common/log4z/log4z.h"
 #include "../../common/imp/singleton.h"
@@ -51,13 +51,15 @@ VirtualVolume* VirtualVolumeManager::CreateVirtualVolume(const std::string& virt
 		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == gate_event");
 		return nullptr;
 	}
-	VirtualVolume* virtual_volume = new VirtualVolume;
+	VirtualVolume* virtual_volume = new VirtualVolume(virtual_volume_name);
 	if(nullptr == virtual_volume)
 	{
 		LogError("VirtualVolumeManager::CreateVirtualVolume nullptr == virtual_volume");
 		return nullptr; 
 	}
 	virtual_volume->AddServer(server);
+	virtual_volume_map_.insert(std::make_pair(virtual_volume_name, virtual_volume));
+	GSingle(MongoDBCXXManager)->GetVirtualDB().CreateServerForVirtual(virtual_volume_name, server->server_id_);
 	return virtual_volume;
 }
 

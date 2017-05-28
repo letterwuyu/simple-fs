@@ -5,13 +5,15 @@
 #include <chrono>
 #include <stdint.h>
 
+mongocxx::instance MongoDBManager::inst_;
+
 MongoDBManager::MongoDBManager(const std::string& db_name)
 	:db_name_(db_name)//, inst_{}, conn_{mongocxx::uri{}}
 {
 	
 	std::cerr << "---------------------------------------c1" << std::endl;
-	collections_.insert(std::make_pair(VirtualVolume, std::string("VirtualVolume")));
-	collections_.insert(std::make_pair(Volume, std::string("Volume")));
+	collections_.insert(std::make_pair(Collection_VirtualVolume, std::string("VirtualVolume")));
+	collections_.insert(std::make_pair(Collection_Volume, std::string("Volume")));
 	std::cerr << "---------------------------------------c2" << std::endl;
 //	inst_ = mongocxx::instance{};
 	conn_ = mongocxx::uri{};
@@ -54,7 +56,7 @@ bool MongoDBManager::CreateServerForVirtual(const std::string& virtual_volume_na
 	builder::stream::document build_doc;
 	build_doc << "name" << virtual_volume_name
               << "server" << std::to_string(server_id);
-	auto collection = conn_[db_name_][collections_[VirtualVolume]];
+	auto collection = conn_[db_name_][collections_[Collection_VirtualVolume]];
     collection.insert_one(build_doc.view());
     LogInfo("MongoDBManager::CreateServerForVirtual add server : " << server_id << "for virtual_volume" << virtual_volume_name);
     return true;
@@ -65,7 +67,7 @@ bool MongoDBManager::DeleteServerForVirtual(const std::string& virtual_volume_na
 	builder::stream::document delete_doc;
     delete_doc << "name" << virtual_volume_name
               << "server" << server_id;
-    auto collection = conn_[db_name_][collections_[VirtualVolume]];
+    auto collection = conn_[db_name_][collections_[Collection_VirtualVolume]];
     collection.delete_one(delete_doc.view());
     LogInfo("MongoDBManager::CreateServerForVirtual delete server : " << server_id << "from virtual_volume" << virtual_volume_name);
     return true;
@@ -76,7 +78,7 @@ bool MongoDBManager::AddUnitForVolume(const std::string& volume_name, int unit_i
 	builder::stream::document build_doc;
     build_doc << "name" << volume_name
               << "unit" << std::to_string(unit_id);
-    auto collection = conn_[db_name_][collections_[Volume]];
+    auto collection = conn_[db_name_][collections_[Collection_Volume]];
     collection.insert_one(build_doc.view());
     LogInfo("MongoDBManager::AddUnitForVolume add unit : " << unit_id << "for volume" << volume_name);
     return true;
@@ -86,7 +88,7 @@ bool MongoDBManager::GetUnitForVolume(const std::string& volume_name, std::vecto
 {
 	builder::stream::document build_doc;
     build_doc << "name" << volume_name << finalize;
-    auto collection = conn_[db_name_][collections_[Volume]];
+    auto collection = conn_[db_name_][collections_[Collection_Volume]];
     auto cursor = collection.find(build_doc.view());
 	for(auto&& doc : cursor) {
 		units.push_back(std::stoi(doc["unit"].get_utf8().value.to_string()));
