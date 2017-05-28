@@ -1,4 +1,7 @@
 #include "volume_manager.h"
+#include "volume.h"
+#include "../../common/def/def.h"
+#include "../../common/log4z/log4z.h"
 
 VolumeManager::VolumeManager():volume_map_(VolumeManager::VolumeMap()) {}
 
@@ -27,7 +30,8 @@ Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 		LogError("VolumeManager::CreateVolume create volume fail");
 		return nullptr;
 	}
-	return volume_map_.insert(std::make_pair(volume_name, vp)).second;
+	volume_map_.insert(std::make_pair(volume_name, vp));
+	return vp;
 }
 
 Volume* VolumeManager::GetVolume(const std::string& volume_name)

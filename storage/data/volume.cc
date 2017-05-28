@@ -1,14 +1,21 @@
 #include "volume.h"
+#include "../../common/def/def.h"
+#include "../../common/imp/singleton.h"
 #include "../../common/db/mongodb_cxx_manager.h"
+
+#include "unit_manager.h"
+using namespace imp;
 
 Volume::Volume(const std::string& name, int id):
 	name_(name), id_(id) {}
+
+Volume::~Volume() {}
 
 Volume::comminute_type Volume::Comminute(size_t orgin, void* data, size_t count)
 {
 	if(units_.size() * Unit::Size < orgin)
     {
-    	size_t diff = orgin - Units.size() * Unit::Size;
+    	size_t diff = orgin - units_.size() * Unit::Size;
         int num = diff / Unit::Size;
         while(--num)
         {
@@ -69,7 +76,7 @@ const std::string& Volume::GetName(void) const
 	return name_;
 }
 
-int Volume::GetId(void) const;
+int Volume::GetId(void) const
 {
 	return id_;
 }
@@ -79,10 +86,10 @@ bool Volume::ApplenUnit(void)
 	Unit* punit = GSingle(UnitManager)->CreateUnit();
 	if(nullptr == punit)
 	{
-		LOGError("Volume::ApplenUnit nullptr == punit");
+		LogError("Volume::ApplenUnit nullptr == punit");
 		return false;
 	}
-    Units_.push_back(punit);
+    units_.push_back(punit);
     //存入MongoDB
 	GSingle(MongoDBCXXManager)->GetDB().AddUnitForVolume(name_, punit->GetId());
 	return true;

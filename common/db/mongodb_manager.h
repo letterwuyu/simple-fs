@@ -14,6 +14,8 @@
 #include <mongocxx/instance.hpp>
 #include <bsoncxx/v_noabi/bsoncxx/builder/stream/helpers.hpp>
 
+#include "../log4z/log4z.h"
+
 using namespace std;
 
 using bsoncxx::builder::stream::document;
