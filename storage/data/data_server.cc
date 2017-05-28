@@ -36,6 +36,11 @@ void DataServer::NetHandle(void* net_pack)
 
 bool DataServer::SendMessage(void* event, void* data, size_t size)
 {
+	if(event == nullptr || data == nullptr)
+	{
+		std::cerr << "------------------1" << std::endl;
+	}
+	std::cerr << "ooooooooooooooo   " << size << std::endl;
 	DataEvent* data_event = static_cast<DataEvent*>(event);
 	data_event->Write(data, size);
 	return true;	
@@ -228,7 +233,8 @@ void DataServer::Run(void)
 		LogError("DataServer::Run nullptr == gate_link");
 		return;
 	}
-	ShakeGate();
+//	ShakeGate();
+	std::cerr << "run" << std::endl;
 	Loop();
 }
 
@@ -238,6 +244,11 @@ void DataServer::ShakeGate(void)
 	msg.header_.data_type_ = DG_Shake;
 	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 	msg.id_ = 1;
+	std::cerr << "shake gate" << std::endl;
+	if(nullptr == gate_link)
+	{
+		std::cerr << "nullptr == gate_link" << std::endl;
+	}
 	SendMessage(static_cast<void*>(gate_link), static_cast<void*>(&msg), sizeof(msg));
 }
 

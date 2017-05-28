@@ -33,6 +33,7 @@ void GateServer::NetHandle(void* net_pack)
 	}
 */
 	handle_map_[static_cast<NetDataHeader*>(com_pack->GetData())->data_type_](com_pack->GetEvent(), com_pack->GetData());
+	LogInfo("GateServer::NetHandle : " << static_cast<NetDataHeader*>(com_pack->GetData())->data_type_);
 }
 
 bool GateServer::SendMessage(void* event, void* data, size_t size)
