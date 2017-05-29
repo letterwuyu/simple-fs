@@ -2,7 +2,8 @@
 #define _CLIENT_NETWORK_H__
 
 #include "../../common/net/libevent_network.h"
-#include "../../common/imp/common_thread.h"
+//#include "../../common/imp/common_thread.h"
+#include "../../common/imp/cxx_thread.h"
 #include "client_event.h"
 #include "promise_info.h"
 
@@ -17,17 +18,18 @@
 
 using namespace net;
 
-class ClientNetwork:public MainEvent, public CommonThread {
+class ClientNetwork:public MainEvent, public CxxThread {
 public:
 	ClientNetwork();
 	~ClientNetwork();
+	void Instance();
 public:
 	typedef std::function<bool(void*, void*)>        	HandleType;
 	typedef std::unordered_map<int32_t, HandleType> 	HandleMap;
 	typedef std::queue<std::promise<PromiseInfo>* > 	PromiseList;
 	typedef std::unordered_map<int, ClientEvent*>            DataEventMap;
 
-	void ListenHandle(struct bufferevent *bev);
+	void ListenHandle(struct bufferevent *bev, struct sockaddr *sa, int socklen);
 	void Run(void);
 public:
 	static void NetHandle(void* net_pack);

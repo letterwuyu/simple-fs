@@ -61,5 +61,6 @@
 //数值
 
 #define MaxVolumeNameSize 100  //卷名称最大长度
+#define MaxNetDataSize 2014    //网络包最大有效数据长度
 
 #endif //_DEF_H__

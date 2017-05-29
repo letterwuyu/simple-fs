@@ -10,7 +10,7 @@
 
 using namespace imp;
 
-Unit::Unit(const std::string& name, int id): name_(name), id_(id), size_(0) {}
+Unit::Unit(const std::string& name, int id): name_(std::string("./data/") + name), id_(id), size_(0) {}
 
 Unit::~Unit() {}
 

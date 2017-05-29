@@ -24,7 +24,7 @@ DEFINE_MESSAGE_BEGIN(GD_UpdateVolume)
 	char name_[MaxVolumeNameSize];
 	size_t orgin_;
 	size_t size_;
-	char   buffer[0];
+	char   buffer_[MaxNetDataSize];
 	void Clear()
 	{
 		memset(this, 0, sizeof(*this));

@@ -8,7 +8,7 @@ LogDir=../../common/log4z
 client: main.o \
 		libevent_network.o \
 		libevent_socket.o \
-        common_thread.o \
+        cxx_thread.o \
         common_package.o \
         package_analysis.o \
         log4z.o \
@@ -17,7 +17,7 @@ client: main.o \
 	$(CXX) $(CXXFLAGS) main.o \
                        libevent_network.o \
 					   libevent_socket.o \
-                       common_thread.o \
+                       cxx_thread.o \
                        common_package.o \
                        package_analysis.o \
                        log4z.o \
@@ -30,8 +30,8 @@ libevent_network.o: $(NetDir)/libevent_network.cc
 	$(CXX) $(CXXFLAGS) -c $(NetDir)/libevent_network.cc
 libevent_socket.o: $(NetDir)/libevent_socket.cc
 	$(CXX) $(CXXFLAGS) -c $(NetDir)/libevent_socket.cc
-common_thread.o: $(ImpDir)/common_thread.cc
-	$(CXX) $(CXXFLAGS) -c $(ImpDir)/common_thread.cc
+cxx_thread.o: $(ImpDir)/cxx_thread.cc
+	$(CXX) $(CXXFLAGS) -c $(ImpDir)/cxx_thread.cc
 common_package.o: $(NetDir)/common_package.cc
 	$(CXX) $(CXXFLAGS) -c $(NetDir)/common_package.cc
 package_analysis.o: $(NetDir)/package_analysis.cc

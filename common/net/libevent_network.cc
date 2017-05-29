@@ -62,7 +62,7 @@ namespace net {
 	}
 
 	void MainEvent::ListenCallBack(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr *sa, int socklen, void *user_data) {
-
+		std::cerr << "Listen " << std::endl;
 		MainEvent *pMainEvent = static_cast<MainEvent*>(user_data);
 		struct bufferevent *bev;
 		bev = bufferevent_socket_new(pMainEvent->getBase(), fd, BEV_OPT_CLOSE_ON_FREE);
@@ -71,7 +71,7 @@ namespace net {
 			event_base_loopbreak(pMainEvent->getBase());
 			return;
 		}
-		pMainEvent->ListenHandle(bev);
+		pMainEvent->ListenHandle(bev, sa, socklen);
 	}
 
 	struct event_base* MainEvent::gEventBase = NULL;

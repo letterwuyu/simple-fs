@@ -24,7 +24,7 @@ public:
     int         GetId(void) const;
 
 private:
-	comminute_type Comminute(size_t orgin, void* data, size_t count);	
+	comminute_type Comminute(size_t orgin, char* data, size_t count);	
 private:
 	std::vector<Unit*> units_;
 	std::string name_;

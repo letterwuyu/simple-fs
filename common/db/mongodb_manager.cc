@@ -96,3 +96,14 @@ bool MongoDBManager::GetUnitForVolume(const std::string& volume_name, std::vecto
     return true;
 }
 
+bool MongoDBManager::DelUnitForVolume(const std::string& volume_name, int unit_id)
+{
+	builder::stream::document delete_doc;
+    delete_doc << "name" << volume_name
+               << "unit" << std::to_string(unit_id);
+    auto collection = conn_[db_name_][collections_[Collection_Volume]];
+    collection.delete_one(delete_doc.view());
+    LogInfo("MongoDBManager::DelUnitForVolume delete unit : " << unit_id << "from volume" << volume_name);
+    return true;
+	
+}

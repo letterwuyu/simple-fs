@@ -24,7 +24,7 @@ namespace net{
 		static void ListenCallBack(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr *sa, int socklen, void *use_data);
 		static void SignalCallBack(evutil_socket_t sig, short events, void *user_data);
 	public:
-		virtual void ListenHandle(struct bufferevent *bev) = 0;
+		virtual void ListenHandle(struct bufferevent *bev, struct sockaddr *sa, int socklen) = 0;
 	protected:
 		struct evconnlistener *_listener;
 		std::string _address;

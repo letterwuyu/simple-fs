@@ -10,6 +10,5 @@ int main(int argc, char** argv)
 	
 	DataServer data_server;
 	data_server.Start();
-	data_server.ShakeGate();
 	data_server.Join();
 }

@@ -32,8 +32,8 @@ void GateServer::NetHandle(void* net_pack)
 		return;
 	}
 */
+	std::cerr << "map : " << DG_Shake << "msg : " << static_cast<NetDataHeader*>(com_pack->GetData())->data_type_ << std::endl;
 	handle_map_[static_cast<NetDataHeader*>(com_pack->GetData())->data_type_](com_pack->GetEvent(), com_pack->GetData());
-	LogInfo("GateServer::NetHandle : " << static_cast<NetDataHeader*>(com_pack->GetData())->data_type_);
 }
 
 bool GateServer::SendMessage(void* event, void* data, size_t size)
@@ -89,10 +89,27 @@ void GateServer::RegisterProcess(void)
 	handle_map_.insert(std::make_pair(CG_UpdateVirtualVolume, GateServer::CGUpdateVirtualVolume));
 
 	handle_map_.insert(std::make_pair(CG_ReadVirtualVolume, GateServer::CGReadVirtualVolume));
-
+	
 	handle_map_.insert(std::make_pair(DG_Shake, GateServer::DGShake));
+	handle_map_.insert(std::make_pair(DG_CreateVolume, GateServer::DGCreateVolume));
+	handle_map_.insert(std::make_pair(DG_DeleteVolume, GateServer::DGDeleteVolume));
+	handle_map_.insert(std::make_pair(DG_UpdateVolume, GateServer::DGUpdateVolume));
 }
 
+bool GateServer::DGCreateVolume(void* event, void* data)
+{
+	return true;
+}
+
+bool GateServer::DGDeleteVolume(void* event, void* data)
+{
+	return  true;
+}
+
+bool GateServer::DGUpdateVolume(void* event, void* data)
+{
+	return true;
+}
 //创建卷
 bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 {
@@ -147,13 +164,39 @@ bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 //删除卷
 bool GateServer::CGDeleteVirtualVolume(void* event, void* data)
 {
-	//暂不实现
+	CG_DeleteVirtualVolumeMessage* pack = static_cast<CG_DeleteVirtualVolumeMessage*>(data);
+	VirtualVolume *virtual_volume = GSingle(VirtualVolumeManager)->GetVirtualVolume(std::string(pack->name_));
+	if(nullptr == virtual_volume)
+	{
+		LogError("GateServer::CGUpdateVirtualVolume nullptr == virtual_volume");
+		return false;
+	}
+	VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+	
+	{
+		GD_DeleteVolumeMessage msg;
+		msg.header_.data_type_ = GD_DeleteVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+		for(auto it = server_list.begin(); it != server_list.end(); ++it)
+		{
+			(*it)->socket_event_->Write(static_cast<void*>(&msg), sizeof(msg));
+		}
+	}
+
+	{
+		GC_DeleteVirtualVolumeMessage msg;
+		msg.header_.data_type_ = GC_DeleteVirtualVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.code_ = Return_Succeed;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+	}
+	
 	return true;
 }
 
 
 //写入卷
-//暂时先不实现该功能
 bool GateServer::CGUpdateVirtualVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
@@ -161,6 +204,37 @@ bool GateServer::CGUpdateVirtualVolume(void* event, void* data)
 		LogError("GateServer::DGUpdateVolume nullptr == event || nullptr == data");
 		return false;
 	}
+	CG_UpdateVirtualVolumeMessage* pack = static_cast<CG_UpdateVirtualVolumeMessage*>(data);
+	VirtualVolume *virtual_volume = GSingle(VirtualVolumeManager)->GetVirtualVolume(std::string(pack->name_));
+	if(nullptr == virtual_volume)
+	{
+		LogError("GateServer::CGUpdateVirtualVolume nullptr == virtual_volume");
+		return false;
+	}
+	VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+	
+	{
+		GD_UpdateVolumeMessage msg;
+		msg.header_.data_type_ = GD_UpdateVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.orgin_ = pack->orgin_;
+		msg.size_ = pack->size_;
+		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+		memcpy(msg.buffer_, pack->data_, pack->size_);
+		for(auto it = server_list.begin(); it != server_list.end(); ++it)
+		{
+			(*it)->socket_event_->Write(static_cast<void*>(&msg), sizeof(msg));
+		}
+	}
+
+	{
+		GC_UpdateVirtualVolumeMessage msg;
+		msg.header_.data_type_ = GC_UpdateVirtualVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.code_ = Return_Succeed;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+	}
+	
 	return true;
 }
 
@@ -220,9 +294,14 @@ GateServer::GateServer():
 
 GateServer::~GateServer() {}
 
-void GateServer::ListenHandle(struct bufferevent* bev)
+void GateServer::ListenHandle(struct bufferevent* bev, struct sockaddr *sa, int socklen)
 {
+	std::cerr << "Listen handle" << std::endl;
 	GateEvent* gate_event = new GateEvent(NetHandle);
+	gate_event->SetBuffer(bev);
+	gate_event->SetSockAddr(sa, socklen);
+	std::cerr << "address" /*<< gate_event->GetIp() << " : "*/ << gate_event->GetPort() << std::endl;
+	gate_event->Init();
 	if(nullptr == gate_event)
 	{
 		LogError("GateServer::ListenHandle nullptr == gate_event");
@@ -233,6 +312,7 @@ void GateServer::ListenHandle(struct bufferevent* bev)
 
 void GateServer::Run(void)
 {
+    RegisterProcess();
 	Init();
 	Loop();
 }

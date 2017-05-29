@@ -12,7 +12,7 @@ public:
 	bool 					AddServer(ServerInfo* server);
 	bool 					DeleteServer(int server_id);
 	const ServerList        GetServerList() const;
-	const std::string& GetName(void) const;
+	const std::string&      GetName(void) const;
 private:
 	ServerList servers_;
 	std::string name_;

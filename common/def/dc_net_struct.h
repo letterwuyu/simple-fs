@@ -6,7 +6,7 @@ DEFINE_MESSAGE_BEGIN(DC_ReadVolume)
 	int32_t code_;
 	size_t orgin_;
 	size_t size_;
-	char   data_[0];
+	char   data_[MaxNetDataSize];
 	void Clear()
 	{
 		memset(this, 0, sizeof(*this));

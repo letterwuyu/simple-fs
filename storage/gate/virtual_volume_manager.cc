@@ -45,6 +45,12 @@ VirtualVolume* VirtualVolumeManager::CreateVirtualVolume(const std::string& virt
     virtual_volume_map_.insert(make_pair(volume_id, sp));
     return volume_id;
 */
+	auto it = virtual_volume_map_.find(virtual_volume_name);
+	if(virtual_volume_map_.end() != it)
+	{
+		LogError("VirtualVolumeManager::CreateVirtualVolume virtual_volume_map_.end() != it");
+		return nullptr;
+	}
 	ServerInfo* server = GSingle(ServerManager)->SelectServer();
 	if(nullptr == server)
 	{
@@ -73,4 +79,34 @@ VirtualVolume* VirtualVolumeManager::GetVirtualVolume(const std::string& virtual
 	}
 	return it->second;
 }   
+
+bool VirtualVolumeManager::DeleteVirtualVolume(const std::string& virtual_volume_name)
+{
+	auto it = virtual_volume_map_.find(virtual_volume_name);
+	if(virtual_volume_map_.end() == it)
+	{
+		LogError("VirtualVolumeManager::DeleteVirtualVolume virtual_volume_map_.end() == it");
+		return false;
+	}
+	VirtualVolume* virtual_volume = it->second;
+	if(nullptr == virtual_volume)
+	{
+		LogError("VirtualVolumeManager::DeleteVirtualVolume nullptr == virtual_volume");
+		virtual_volume_map_.erase(it);
+		return false;
+	}
+	VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+	for(auto it = server_list.begin(); it != server_list.end(); ++it)
+	{
+		GSingle(MongoDBCXXManager)->GetVirtualDB().DeleteServerForVirtual(virtual_volume_name, (*it)->server_id_);
+	}
+	return true;
+}
+
+
+
+
+
+
+
 

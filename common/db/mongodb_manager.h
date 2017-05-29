@@ -41,6 +41,7 @@ public:
 	bool DeleteServerForVirtual(const std::string& virtual_volume_name, int server_id);
 	bool AddUnitForVolume(const std::string& volume_name, int unit_id);
 	bool GetUnitForVolume(const std::string& volume_name, std::vector<int>& units);
+	bool DelUnitForVolume(const std::string& volume_name, int unid_id);
 private:
 	mongocxx::client conn_;
 	static mongocxx::instance inst_;

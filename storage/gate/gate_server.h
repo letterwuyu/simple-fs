@@ -20,7 +20,7 @@ public:
 public:
 	typedef std::function<bool(void*, void*)> HandleType;
 	typedef std::unordered_map<int, HandleType> HandleMap;
-	void ListenHandle(struct bufferevent *bev);
+	void ListenHandle(struct bufferevent *bev, struct sockaddr *sa, int socklen);
 	void Run(void);
 public:
 	static void NetHandle(void* net_pack);
@@ -36,6 +36,9 @@ private:
 	static bool CGReadVolume(void* event, void* data);
 
 	static bool DGShake(void* event, void* data);
+	static bool DGCreateVolume(void* event, void* data);
+	static bool DGDeleteVolume(void* event, void* data);
+	static bool DGUpdateVolume(void* event, void* data);
 private:
 	static HandleMap handle_map_;
 	std::vector<GateEvent*> events_;

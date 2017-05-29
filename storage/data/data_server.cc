@@ -67,6 +67,7 @@ DataEvent* DataServer::Connection(const std::string& ip, int32_t port)
 		return nullptr;
 	}
 	status = connect(sockfd, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr));
+	std::cerr << ip.c_str() << "  " << port  << " " << status << std::endl;
 	if(-1 == status)
 	{
 		LogError("DataServer::Connection -1 == sockfd");
@@ -153,7 +154,6 @@ bool DataServer::GDDeleteVolume(void* event, void* data)
 }
 
 //写入卷
-//暂时先不实现该功能
 bool DataServer::GDUpdateVolume(void* event, void* data)
 {
 	if(nullptr == event || nullptr == data)
@@ -161,10 +161,27 @@ bool DataServer::GDUpdateVolume(void* event, void* data)
 		LogError("DataServer::DGUpdateVolume nullptr == event || nullptr == data");
 		return false;
 	}
+
+	GD_UpdateVolumeMessage* pack = static_cast<GD_UpdateVolumeMessage*>(data);
+	Volume* volume = GSingle(VolumeManager)->GetVolume(std::string(pack->name_));
+	if(nullptr != volume)
+	{
+
+		volume->Write(pack->orgin_, pack->buffer_, pack->size_);
+	}
+
 	DG_UpdateVolumeMessage msg;
 	msg.header_.data_type_ = DG_UpdateVolume;
 	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
-	msg.code_ = Return_Succeed;
+	if(nullptr != volume)
+	{
+		msg.code_ = Return_Succeed;
+	}
+	else
+	{
+		LogError("DataServer::GDUpdateVolume ullptr == volume");
+		msg.code_ = Return_Fail;
+	}
 	SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 	return true;
 }
@@ -195,15 +212,14 @@ bool DataServer::CDReadVolume(void* event, void* data)
 	}
 	else
 	{
-		size_t size = sizeof(DC_ReadVolumeMessage) + pack->size_ * sizeof(char);
-		DC_ReadVolumeMessage* msg = static_cast<DC_ReadVolumeMessage*>(malloc(size));
-		msg->header_.data_type_ = DC_ReadVolume;
-		msg->header_.data_size_ = size = sizeof(NetDataHeader);
-		memcpy(msg->name_, pack->name_, MaxVolumeNameSize);
-		volume->Read(pack->orgin_, msg->data_, pack->size_);
-		msg->size_ = pack->size_;
-		msg->orgin_ = pack->orgin_;
-		SendMessage(static_cast<void*>(event), static_cast<void*>(msg), size);
+		DC_ReadVolumeMessage msg;
+		msg.header_.data_type_ = DC_ReadVolume;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+		volume->Read(pack->orgin_, msg.data_, pack->size_);
+		msg.size_ = pack->size_;
+		msg.orgin_ = pack->orgin_;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 		return true;
 	}
 }
@@ -226,6 +242,7 @@ void DataServer::ListenHandle(struct bufferevent* bev)
 
 void DataServer::Run(void)
 {
+	RegisterProcess();
 	Init();
 	gate_link = Connection(std::string("127.0.0.1"), 8888);
 	if(nullptr == gate_link)
@@ -233,7 +250,7 @@ void DataServer::Run(void)
 		LogError("DataServer::Run nullptr == gate_link");
 		return;
 	}
-//	ShakeGate();
+	ShakeGate();
 	std::cerr << "run" << std::endl;
 	Loop();
 }
