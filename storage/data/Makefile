@@ -71,7 +71,7 @@ unit_manager.o: unit_manager.cc unit_manager.h
 volume.o: volume.cc volume.h $(DBDir)/mongodb_cxx_manager.h 
 	$(CXX) -std=c++11 -c volume.cc $(MongoDBComplie)
 volume_manager.o: volume_manager.cc volume_manager.h
-	$(CXX) $(CXXFLAGS) -c volume_manager.cc
+	$(CXX) $(CXXFLAGS) -c volume_manager.cc $(MongoDBComplie)
 common_package.o: $(NetDir)/common_package.cc $(NetDir)/common_package.h
 	$(CXX) $(CXXFLAGS) -c $(NetDir)/common_package.cc
 clean:

@@ -45,6 +45,17 @@ ServerInfo* ServerManager::SelectServer()
 	return *servers_.begin();
 }
 
+ServerInfo* ServerManager::GetServer(int32_t server_id)
+{
+	for(auto it = servers_.begin(); it != servers_.end(); ++it)
+	{
+		if((*it)->server_id_ == server_id)
+		{
+			return *it;
+		}
+	}
+	return nullptr;
+}
 
 
 

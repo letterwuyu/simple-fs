@@ -233,8 +233,7 @@ bool GateServer::CGUpdateVirtualVolume(void* event, void* data)
 		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 		msg.code_ = Return_Succeed;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
-	}
-	
+	}	
 	return true;
 }
 
@@ -268,6 +267,8 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 		strcpy(msg.name_, pack->name_);
 		msg.orgin_ = pack->orgin_;
 		msg.size_ = pack->size_;
+		strcpy(msg.ip_, (*server_list.begin())->listen_ip_.c_str());
+		msg.port_ = (*server_list.begin())->listen_port_;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 		return true;
 	}
@@ -285,6 +286,8 @@ bool GateServer::DGShake(void* event, void* data)
 	ServerInfo server_info;
 	server_info.socket_event_ = static_cast<GateEvent*>(event);
 	server_info.server_id_ = pack->id_;
+	server_info.listen_port_ = pack->listen_port_;
+	server_info.listen_ip_ = std::string(pack->listen_ip_);
 	GSingle(ServerManager)->AddServer(server_info);
 	return true;
 }
@@ -300,7 +303,7 @@ void GateServer::ListenHandle(struct bufferevent* bev, struct sockaddr *sa, int 
 	GateEvent* gate_event = new GateEvent(NetHandle);
 	gate_event->SetBuffer(bev);
 	gate_event->SetSockAddr(sa, socklen);
-	std::cerr << "address" /*<< gate_event->GetIp() << " : "*/ << gate_event->GetPort() << std::endl;
+	std::cerr << "address" << gate_event->GetIp() << " : " << gate_event->GetPort() << std::endl;
 	gate_event->Init();
 	if(nullptr == gate_event)
 	{

@@ -63,13 +63,9 @@ namespace net {
 		
 		memset(ips, '\0', sizeof(ips));
 		memcpy(&sin, sa, sizeof(sin));
-		std::cerr << "111111" << std::endl;
 		sprintf(ips, inet_ntoa(sin.sin_addr));
-		std::cerr << "222222" << std::endl;
 		ips[29] = '\0';
 		_ip = ips;
-		std::cerr << ips << std::endl;
-		std::cerr << "333333" << std::endl;
 		_port = sin.sin_port;
 	}
 	

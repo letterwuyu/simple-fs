@@ -10,7 +10,7 @@
 
 using namespace imp;
 
-Unit::Unit(const std::string& name, int id): name_(std::string("./data/") + name), id_(id), size_(0) {}
+Unit::Unit(const std::string& name, long long id): name_(std::string("./data/") + name), id_(id), size_(0) {}
 
 Unit::~Unit() {}
 
@@ -46,7 +46,7 @@ bool Unit::Delete()
 	return true;
 }
 
-int Unit::GetId()
+long long Unit::GetId()
 {
 	return id_;
 }

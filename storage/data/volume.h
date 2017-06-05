@@ -17,6 +17,7 @@ public:
     bool 		Read(size_t orgin, void* data, size_t count);
 	bool 		Delete(void);
 	bool        Create(void);
+	bool        AddUnit(Unit* unit);
 private:
 	bool 		ApplenUnit(void);
 public:

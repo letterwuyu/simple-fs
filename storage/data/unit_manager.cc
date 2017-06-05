@@ -21,7 +21,7 @@ UnitManager::~UnitManager()
 
 Unit* UnitManager::CreateUnit()
 {
-	int unit_id = std::chrono::steady_clock::now().time_since_epoch().count();
+	long long unit_id = std::chrono::steady_clock::now().time_since_epoch().count();
 	/*
 	std::stringstream oskey;
 	oskey << unit_id;
@@ -37,7 +37,7 @@ Unit* UnitManager::CreateUnit()
 	return punit;
 }
 
-bool UnitManager::DeleteUnit(int unit_id)
+bool UnitManager::DeleteUnit(long long unit_id)
 {
 	auto it = unit_map_.find(unit_id);
 	if(it == unit_map_.end())
@@ -58,9 +58,33 @@ bool UnitManager::DeleteUnit(int unit_id)
 	return true;
 }
 
+void UnitManager::LoadUnitForMongoDB(void)
+{
+	/*
+  	std::vector<std::string> volumes;
+	GSingle(MongoDBCXXManager)->GetVirtualDB().GetVolumeList(volumes);
+	for(auto it = volumes.begin(); it != volumes.end(); ++it)
+	{
+		Volume* volume = new Volume(*it);
+		std::vector<long long> units;
+		GSingle(MongoDBCXXManager)->GetDB().GetUnitForVolume(*it, units);
+		for(auto it = units.begin(); it != units.end(); ++it)
+		{
+			volume->AddUnit(*it);
+		}
+	}
+	*/
+}
 
-
-
+Unit* UnitManager::CreateUnit(long long id)
+{
+	Unit* unit = new Unit(std::to_string(id), id);
+	if(nullptr != unit)
+	{
+		unit_map_.insert(std::make_pair(id, unit));
+	}
+	return unit;
+}
 
 
 

@@ -100,7 +100,11 @@ bool Volume::Create(void)
 	return ApplenUnit();
 }
 
-
+bool Volume::AddUnit(Unit* unit)
+{
+	units_.push_back(unit);
+	return true;
+}
 
 
 

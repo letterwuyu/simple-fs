@@ -73,7 +73,7 @@ bool MongoDBManager::DeleteServerForVirtual(const std::string& virtual_volume_na
     return true;
 }
 
-bool MongoDBManager::AddUnitForVolume(const std::string& volume_name, int unit_id)
+bool MongoDBManager::AddUnitForVolume(const std::string& volume_name, long long unit_id)
 {
 	builder::stream::document build_doc;
     build_doc << "name" << volume_name
@@ -84,7 +84,7 @@ bool MongoDBManager::AddUnitForVolume(const std::string& volume_name, int unit_i
     return true;
 }
 
-bool MongoDBManager::GetUnitForVolume(const std::string& volume_name, std::vector<int>& units)
+bool MongoDBManager::GetUnitForVolume(const std::string& volume_name, std::vector<long long>& units)
 {
 	builder::stream::document build_doc;
     build_doc << "name" << volume_name << finalize;
@@ -96,7 +96,7 @@ bool MongoDBManager::GetUnitForVolume(const std::string& volume_name, std::vecto
     return true;
 }
 
-bool MongoDBManager::DelUnitForVolume(const std::string& volume_name, int unit_id)
+bool MongoDBManager::DelUnitForVolume(const std::string& volume_name, long long unit_id)
 {
 	builder::stream::document delete_doc;
     delete_doc << "name" << volume_name
@@ -106,4 +106,32 @@ bool MongoDBManager::DelUnitForVolume(const std::string& volume_name, int unit_i
     LogInfo("MongoDBManager::DelUnitForVolume delete unit : " << unit_id << "from volume" << volume_name);
     return true;
 	
+}
+
+bool MongoDBManager::GetVirtualVolumeList(std::set<std::string>& virtual_volumes)
+{
+	auto collection = conn_[db_name_][collections_[Collection_VirtualVolume]];
+	auto cursor = collection.find({});
+	for(auto&& doc : cursor)
+	{
+		virtual_volumes.insert(doc["name"].get_utf8().value.to_string());
+	}
+	return true;
+}
+
+bool MongoDBManager::GetVolumeList(std::set<std::string>& volumes)
+{
+	return GetVirtualVolumeList(volumes);
+}
+
+bool MongoDBManager::GetServerListForVirtualVolume(const std::string& virtual_volume_name, std::vector<int>& servers)
+{	
+	builder::stream::document build_doc;
+    build_doc << "name" << virtual_volume_name << finalize;
+    auto collection = conn_[db_name_][collections_[Collection_VirtualVolume]];
+    auto cursor = collection.find(build_doc.view());
+    for(auto&& doc : cursor) {
+        servers.push_back(std::stoi(doc["server"].get_utf8().value.to_string()));
+    }    
+    return true;
 }

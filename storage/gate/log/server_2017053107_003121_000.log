@@ -1,0 +1,3 @@
+2017-05-31 07:22:11.213 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-05-31 07:22:11.213 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-05-31 07:22:16.272 LOG_INFO GateServer::DGShake ( gate_server.cc ) : 278 

@@ -19,7 +19,7 @@ public:
 public:
 	typedef std::function<bool(void*, void*)> HandleType;
 	typedef std::unordered_map<int, HandleType> HandleMap;
-	void ListenHandle(struct bufferevent *bev);
+	void ListenHandle(struct bufferevent *bev, struct sockaddr *sa, int socklen);
 	void Run(void);
 public:
 	void ShakeGate(void);

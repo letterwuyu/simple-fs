@@ -14,7 +14,7 @@ public:
 	Volume* GetVolume(const std::string& volume_name);
 	Volume* GetVolume(int volume_id);
 	bool    DeleteVolume(const std::string& volume_name);
-	bool    Loadvolume();
+	void    LoadVolume();
 private:
 	VolumeMap volume_map_;
 };

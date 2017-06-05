@@ -12,6 +12,7 @@ public:
 	VirtualVolume* CreateVirtualVolume(const std::string& virtual_volume_name);
 	VirtualVolume* GetVirtualVolume(const std::string& virtual_volume_name);
 	bool           DeleteVirtualVolume(const std::string& virtual_volume_name);
+	void           LoadVirtualVolume();
 private:
 	typedef std::unordered_map<std::string, VirtualVolume*> VirtualVolumeMap;
 	VirtualVolumeMap virtual_volume_map_;

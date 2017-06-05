@@ -82,7 +82,10 @@ namespace net {
 			MainEvent::gEventBase = event_base_new();
 		}
 	}	
-	
+	struct event_base* MainEvent::GetGlobalEventBase()
+	{
+		return MainEvent::gEventBase;
+	}	
 }
 
 

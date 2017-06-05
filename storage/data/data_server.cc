@@ -31,6 +31,7 @@ void DataServer::NetHandle(void* net_pack)
 		return;
 	}
 */
+	 std::cout << "msg " << static_cast<NetDataHeader*>(com_pack->GetData())->data_type_ << std::endl;
 	 handle_map_[static_cast<NetDataHeader*>(com_pack->GetData())->data_type_](com_pack->GetEvent(), com_pack->GetData());
 }
 
@@ -189,6 +190,7 @@ bool DataServer::GDUpdateVolume(void* event, void* data)
 //读取卷
 bool DataServer::CDReadVolume(void* event, void* data)
 {
+	std::cerr << "DataServer::CDReadVolume" << std::endl;
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("DataServer::CDReadVolume nullptr == event || nullptr == data");
@@ -229,9 +231,12 @@ DataServer::DataServer():
 
 DataServer::~DataServer() {}
 
-void DataServer::ListenHandle(struct bufferevent* bev)
+void DataServer::ListenHandle(struct bufferevent* bev, struct sockaddr *sa, int socklen)
 {
 	DataEvent* data_event = new DataEvent(NetHandle);
+	data_event->SetBuffer(bev);
+	data_event->SetSockAddr(sa, socklen);
+	data_event->Init();
 	if(nullptr == data_event)
 	{
 		LogError("DataServer::ListenHandle nullptr == data_event");
@@ -261,6 +266,8 @@ void DataServer::ShakeGate(void)
 	msg.header_.data_type_ = DG_Shake;
 	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 	msg.id_ = 1;
+	msg.listen_port_ = 8889;
+	strcpy(msg.listen_ip_, "127.0.0.1");
 	std::cerr << "shake gate" << std::endl;
 	if(nullptr == gate_link)
 	{

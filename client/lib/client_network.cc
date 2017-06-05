@@ -37,6 +37,7 @@ void ClientNetwork::NetHandle(void* net_pack)
 bool ClientNetwork::SendMessage(void* event, void* data, size_t size)
 {
 	ClientEvent* client_event = static_cast<ClientEvent*>(event);
+	std::cerr << "ClientNetwork::SendMessage" << std::endl;
 	client_event->Write(data, size);
 	return true;	
 }
@@ -68,7 +69,7 @@ ClientEvent* ClientNetwork::Connection(const std::string& ip, int32_t port)
 		return nullptr;
 	}
 
-	struct bufferevent* bev = bufferevent_socket_new(getBase(), sockfd, BEV_OPT_CLOSE_ON_FREE);
+	struct bufferevent* bev = bufferevent_socket_new(GetGlobalEventBase(), sockfd, BEV_OPT_CLOSE_ON_FREE);
 	ClientEvent* client_event = new ClientEvent(NetHandle);
 	if(nullptr == client_event)
 	{
@@ -195,9 +196,21 @@ bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 		return false;
 	}
 	auto it = data_event_map_.find(pack->id_);
-	if(data_event_map_.end() != it)
+	if(data_event_map_.end() == it)
 	{
-		LogError("ClientNetwork::GCReadVirtualVolume data_event_map_.end() != it");
+		std::cerr << pack->ip_ << " " << pack->port_ << std::endl;
+		ClientEvent* client_event = Connection(std::string(pack->ip_), pack->port_);
+		if(nullptr == client_event)
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume nullptr == client_event");
+			return false;
+		}
+		data_event_map_.insert(std::make_pair(pack->id_, client_event));
+	}
+	it = data_event_map_.find(pack->id_);
+	if(data_event_map_.end() == it)
+	{
+		LogError("ClientNetwork::GCReadVirtualVolume data_event_map_.end() == it");
 		return false;
 	}
 	CD_ReadVolumeMessage msg;
@@ -206,6 +219,7 @@ bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 	memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
 	msg.orgin_ = pack->orgin_;
 	msg.size_ = pack->size_;
+	std::cerr << "++++++++++++++++++ " << std::endl;
 	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));
 	return true;
 }

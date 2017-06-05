@@ -6,17 +6,17 @@
 class Unit {
 public:
 	static const size_t Size = 1024 * 1024 * 4;
-	Unit(const std::string& name, int id);
+	Unit(const std::string& name, long long id);
 	~Unit();
 	bool 		Write(size_t orign, void* buffer, size_t count);
 	bool	 	Read(size_t orgin, void* buffer, size_t count);
 	bool        Create();
 	bool        Delete();
-	int  		GetId();
+	long long  		GetId();
 	std::string      GetName();
 private:
 	std::string name_;
-	int         id_;
+	long long         id_;
 	size_t      size_;
 };
 

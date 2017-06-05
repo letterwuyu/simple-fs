@@ -29,6 +29,8 @@ DEFINE_MESSAGE_END
 
 DEFINE_MESSAGE_BEGIN(GC_ReadVirtualVolume)
 	int32_t id_;
+	char ip_[MaxIpSize];
+	int32_t port_;
 	int32_t code_;
     char name_[MaxVolumeNameSize];
 	size_t orgin_;

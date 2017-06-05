@@ -7,11 +7,13 @@
 
 class UnitManager {
 public:
-	typedef std::unordered_map<int, Unit*> UnitMap;
+	typedef std::unordered_map<long long, Unit*> UnitMap;
 	UnitManager();
 	~UnitManager();
 	Unit* 			CreateUnit();
-	bool   			DeleteUnit(int unit_id);
+	bool   			DeleteUnit(long long  unit_id);
+	void 			LoadUnitForMongoDB(void);
+	Unit*           CreateUnit(long long unit_id);
 private:
 	UnitMap unit_map_;
 };

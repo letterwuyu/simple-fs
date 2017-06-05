@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <set>
 
 #include <bsoncxx/array/view.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
@@ -39,9 +40,13 @@ public:
 //	bool DeleteVirtualVolume(const std::string virtual_volume_name);
 	bool CreateServerForVirtual(const std::string& virtual_volume_name, int server_id);
 	bool DeleteServerForVirtual(const std::string& virtual_volume_name, int server_id);
-	bool AddUnitForVolume(const std::string& volume_name, int unit_id);
-	bool GetUnitForVolume(const std::string& volume_name, std::vector<int>& units);
-	bool DelUnitForVolume(const std::string& volume_name, int unid_id);
+	bool AddUnitForVolume(const std::string& volume_name, long long unit_id);
+	bool GetUnitForVolume(const std::string& volume_name, std::vector<long long>& units);
+	bool DelUnitForVolume(const std::string& volume_name, long long unid_id);
+	
+	bool GetVirtualVolumeList(std::set<std::string>& virtual_volumes);
+	bool GetVolumeList(std::set<std::string>& volumes);
+	bool GetServerListForVirtualVolume(const std::string& virtual_volume_name, std::vector<int>& servers);
 private:
 	mongocxx::client conn_;
 	static mongocxx::instance inst_;

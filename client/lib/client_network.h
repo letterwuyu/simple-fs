@@ -35,7 +35,7 @@ public:
 	static void NetHandle(void* net_pack);
 private:
 	static bool SendMessage(void* event, void* data, size_t size);
-	ClientEvent* Connection(const std::string& ip, int32_t port);
+	static ClientEvent* Connection(const std::string& ip, int32_t port);
 	static void RegisterProcess(void);
 
 	static bool GCCreateVirtualVolume(void* event, void* data);

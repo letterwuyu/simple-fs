@@ -1,5 +1,5 @@
 #include "data_event.h"
-
+#include <iostream>
 DataEvent::DataEvent(DataEvent::HandleType handle):
 	SocketEvent(), PackageAnalysis(handle, this) {}
 
@@ -7,6 +7,7 @@ DataEvent::~DataEvent() {}
 
 void DataEvent::ReadHandle(struct bufferevent *bev)
 {
+	std::cerr << "DataEvent::ReadHandle " << std::endl;
 	struct evbuffer *input =bufferevent_get_input(bev);
     size_t sz=evbuffer_get_length(input);	
     if (sz> 0)

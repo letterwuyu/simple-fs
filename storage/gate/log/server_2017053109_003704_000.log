@@ -1,0 +1,4 @@
+2017-05-31 09:12:08.248 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-05-31 09:12:08.248 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-05-31 09:12:11.326 LOG_INFO GateServer::DGShake ( gate_server.cc ) : 279 
+2017-05-31 09:12:17.699 LOG_INFO MongoDBManager::CreateServerForVirtual add server : 1for virtual_volume1 ( ../../common/db/mongodb_manager.cc ) : 61 

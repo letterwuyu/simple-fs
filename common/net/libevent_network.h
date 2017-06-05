@@ -33,6 +33,7 @@ namespace net{
 	public:
 		static struct event_base *gEventBase;
 		static void InstanceEventBase();
+		static struct event_base* GetGlobalEventBase();
 	};
 
 }

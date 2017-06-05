@@ -34,6 +34,9 @@ DEFINE_MESSAGE_END
 //握手
 DEFINE_MESSAGE_BEGIN(DG_Shake)
     int32_t id_;
+	int32_t client_num_;
+	int32_t listen_port_;
+	char    listen_ip_[MaxIpSize];
 	void Clear()
 	{
 		memset(this, 0, sizeof(*this));

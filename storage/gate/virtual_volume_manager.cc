@@ -5,6 +5,8 @@
 #include "../../common/log4z/log4z.h"
 #include "../../common/imp/singleton.h"
 
+#include <set>
+
 using namespace imp;
 
 VirtualVolumeManager::VirtualVolumeManager():
@@ -102,6 +104,42 @@ bool VirtualVolumeManager::DeleteVirtualVolume(const std::string& virtual_volume
 	}
 	return true;
 }
+
+void VirtualVolumeManager::LoadVirtualVolume()
+{
+	std::set<std::string> virtual_volume_names;
+	GSingle(MongoDBCXXManager)->GetVirtualDB().GetVirtualVolumeList(virtual_volume_names);
+	for(auto it = virtual_volume_names.begin(); it != virtual_volume_names.end(); ++it)
+	{
+		VirtualVolume* virtual_volume = new VirtualVolume(*it);
+		if(nullptr == virtual_volume)
+		{
+			LogError("VirtualVolumeManager::LoadVirtualVolume nullptr == virtual_volume");
+			continue;
+		}
+		std::vector<int> servers;
+		GSingle(MongoDBCXXManager)->GetVirtualDB().GetServerListForVirtualVolume(*it, servers);
+		for(auto it = servers.begin(); it != servers.end(); ++it)
+		{
+			ServerInfo* server_info = GSingle(ServerManager)->GetServer(*it);
+			if(nullptr == server_info)
+			{
+				LogError("VirtualVolumeManager::LoadVirtualVolume nullptr == server_info");
+				continue;
+			}
+			virtual_volume->AddServer(server_info);
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
 
 
 

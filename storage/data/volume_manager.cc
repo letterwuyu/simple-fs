@@ -2,6 +2,12 @@
 #include "volume.h"
 #include "../../common/def/def.h"
 #include "../../common/log4z/log4z.h"
+#include "../../common/imp/singleton.h"
+#include "../../common/db/mongodb_cxx_manager.h"
+#include "unit_manager.h"
+#include <set>
+
+using namespace imp;
 
 VolumeManager::VolumeManager():volume_map_(VolumeManager::VolumeMap()) {}
 
@@ -94,7 +100,34 @@ bool VolumeManager::DeleteVolume(const std::string& volume_name)
 	return true;
 }
 
-
+void VolumeManager::LoadVolume()
+{
+	std::set<std::string> volumes;
+	GSingle(MongoDBCXXManager)->GetVirtualDB().GetVolumeList(volumes);
+	for(auto it = volumes.begin(); it != volumes.end(); ++it)
+	{
+		std::vector<long long> units;
+		GSingle(MongoDBCXXManager)->GetDB().GetUnitForVolume(*it, units);
+		std::hash<std::string> hash_fn;
+		long long volume_id = hash_fn(*it);
+		Volume* volume = new Volume(*it, volume_id);
+		if(nullptr == volume)
+		{
+			LogError("VolumeManager::LoadVolume nullptr == volume")
+		}
+		volume_map_.insert(std::make_pair(*it, volume));
+		for(auto it = units.begin(); it != units.end(); ++it)
+		{
+			Unit* unit = GSingle(UnitManager)->CreateUnit(*it);
+			if(nullptr == unit)
+			{
+				LogError("VolumeManager::LoadVolume nullptr == unit");
+				break;
+			}
+			volume->AddUnit(unit);
+		}	
+	}
+}
 
 
 
