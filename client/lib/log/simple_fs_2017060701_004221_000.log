@@ -1,9 +1,0 @@
-2017-06-07 01:15:38.925 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
-2017-06-07 01:15:38.925 LOG_ALARM  logger id=0 path=./log/ name=simple_fs level=0 display=1 
-2017-06-07 01:16:36.894 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.894 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.894 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.894 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.894 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.895 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 
-2017-06-07 01:16:36.895 LOG_ERROR ClientNetwork::DCReadVolume promise_list_.empty() ( client_network.cc ) : 238 

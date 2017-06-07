@@ -1,8 +1,0 @@
-2017-04-24 00:58:15.488 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
-2017-04-24 00:58:15.489 LOG_ALARM  logger id=0 path=./log/ name=a.out level=0 display=1 
-2017-04-24 00:58:15.489 LOG_DEBUG  *** hellow wolrd ***  ( main.cc ) : 9 
-2017-04-24 00:58:15.489 LOG_INFO loginfo ( main.cc ) : 10 
-2017-04-24 00:58:15.489 LOG_WARN log warning ( main.cc ) : 11 
-2017-04-24 00:58:15.489 LOG_ERROR log err ( main.cc ) : 12 
-2017-04-24 00:58:15.489 LOG_ALARM log alarm ( main.cc ) : 13 
-2017-04-24 00:58:15.489 LOG_FATAL log fatal ( main.cc ) : 14 

@@ -1,3 +1,0 @@
-2017-06-07 00:47:40.499 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
-2017-06-07 00:47:40.499 LOG_ALARM  logger id=0 path=./log/ name=client level=0 display=1 
-2017-06-07 00:47:42.503 LOG_ERROR ClientNetwork::DCReadVolume Return_Fail == pack->code_ ( client_network.cc ) : 251 

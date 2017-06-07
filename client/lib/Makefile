@@ -24,7 +24,7 @@ simple_fs: simple_fs.o \
                        client_event.o \
                        client_network.o \
                        -o simple_fs -levent -lpthread
-Client: main.o \
+lient: main.o \
 		libevent_network.o \
 		libevent_socket.o \
         cxx_thread.o \
@@ -43,7 +43,7 @@ Client: main.o \
                        client_event.o \
                        client_network.o \
                        -o client -levent -lpthread
-main.o: main.cc
+ain.o: main.cc
 	$(CXX) $(CXXFLAGS) -c main.cc
 simple_fs.o: simple_fs.cc
 	$(CXX) $(CXXFLAGS) -c simple_fs.cc
