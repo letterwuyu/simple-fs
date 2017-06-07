@@ -1,0 +1,4 @@
+2017-06-07 03:50:06.996 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-06-07 03:50:06.996 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-06-07 03:50:26.355 LOG_INFO MongoDBManager::AddUnitForVolume add unit : 17434544750069for volume2 ( ../../common/db/mongodb_manager.cc ) : 83 
+2017-06-07 03:51:48.633 LOG_INFO MongoDBManager::DelUnitForVolume delete unit : 17434544750069from volume2 ( ../../common/db/mongodb_manager.cc ) : 106 

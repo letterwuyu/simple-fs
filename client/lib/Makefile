@@ -24,7 +24,7 @@ simple_fs: simple_fs.o \
                        client_event.o \
                        client_network.o \
                        -o simple_fs -levent -lpthread
-lient: main.o \
+Client: main.o \
 		libevent_network.o \
 		libevent_socket.o \
         cxx_thread.o \

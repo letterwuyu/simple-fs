@@ -17,6 +17,8 @@ int main(int argc, char**argv)
 	client_network.CreateFile("1");
 	char buffer[] = "hello world";
 	client_network.WriteFile("1", 0, buffer, 12);
+	size_t size = client_network.SizeFile("1");
+	std::cerr << "size - " << size << std::endl;
 	char buf[12];
 	client_network.ReadFile("1", 0, buf, 12);
 	std::cerr << "buf : " << buf << std::endl;

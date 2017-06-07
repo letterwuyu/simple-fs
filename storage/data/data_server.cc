@@ -191,7 +191,6 @@ bool DataServer::GDUpdateVolume(void* event, void* data)
 //读取卷
 bool DataServer::CDReadVolume(void* event, void* data)
 {
-	std::cerr << "DataServer::CDReadVolume" << std::endl;
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("DataServer::CDReadVolume nullptr == event || nullptr == data");
@@ -227,7 +226,6 @@ bool DataServer::CDReadVolume(void* event, void* data)
 		{
 			msg.code_ = Return_Fail;
 		}
-		std::cerr << "----------" << msg.data_ << "---------" << std::endl;
 		msg.size_ = pack->size_;
 		msg.orgin_ = pack->orgin_;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
@@ -238,7 +236,6 @@ bool DataServer::CDReadVolume(void* event, void* data)
 
 bool DataServer::CDVolumeSize(void* event, void* data)
 {
-	std::cerr << "DataServer::CDVolumeSize" << std::endl;
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("DataServer::CDVolumeSize nullptr == event || nullptr == data");
@@ -302,7 +299,6 @@ void DataServer::Run(void)
 		return;
 	}
 	ShakeGate();
-	std::cerr << "run" << std::endl;
 	Loop();
 }
 
@@ -314,10 +310,9 @@ void DataServer::ShakeGate(void)
 	msg.id_ = 1;
 	msg.listen_port_ = 8889;
 	strcpy(msg.listen_ip_, "127.0.0.1");
-	std::cerr << "shake gate" << std::endl;
 	if(nullptr == gate_link)
 	{
-		std::cerr << "nullptr == gate_link" << std::endl;
+		
 	}
 	SendMessage(static_cast<void*>(gate_link), static_cast<void*>(&msg), sizeof(msg));
 }

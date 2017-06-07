@@ -7,7 +7,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
-
+#include <cmath>
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -59,18 +59,23 @@ void Download(const std::string& name)
     }   
 	
 	size_t size = client_network->SizeFile(name);
-
+	std::cerr << "^^^^^^" << size << std::endl;
 	size_t seek = 0;
 	
 	size_t len = size > 100 ? 100 : size;
-	while(seek < size)
+	int num = static_cast<int>(std::ceil(static_cast<double>(size) / 100));
+	for(int i = 1; i <= num; i++)
 	{
+		len = std::min(100, static_cast<int>(size));
 		memset(buffer, 0, sizeof(buffer));
 		client_network->ReadFile(name, seek, buffer, len);
+		lseek(fd, seek, SEEK_SET);
+		write(fd, buffer, len);
 		seek += len;
-		seek += 1;	
+		size -= len;
+		len = size > 100 ? 100 : size;
 	}
-
+	close(fd);
 /*	while(client_network->ReadFile(name, seek, buffer, 100))
 	{
 		lseek(fd, seek, SEEK_SET);

@@ -88,8 +88,10 @@ void ClientNetwork::RegisterProcess(void)
 	handle_map_.insert(std::make_pair(GC_UpdateVirtualVolume, ClientNetwork::GCUpdateVirtualVolume));
 
 	handle_map_.insert(std::make_pair(GC_ReadVirtualVolume, ClientNetwork::GCReadVirtualVolume));
+	handle_map_.insert(std::make_pair(GC_VirtualVolumeSize, ClientNetwork::GCVirtualVolumeSize));
 
 	handle_map_.insert(std::make_pair(DC_ReadVolume, ClientNetwork::DCReadVolume));
+	handle_map_.insert(std::make_pair(DC_VolumeSize, ClientNetwork::DCVolumeSize));
 }
 //创建卷
 bool ClientNetwork::GCCreateVirtualVolume(void* event, void* data)
@@ -249,6 +251,7 @@ bool ClientNetwork::GCVirtualVolumeSize(void* event, void* data)
 		}
 		promise->set_value(&pack->code_);
 		return false;
+		std::cerr << "fail" << std::endl;
 	}
 	auto it = data_event_map_.find(pack->id_);
 	if(data_event_map_.end() == it)
@@ -272,6 +275,7 @@ bool ClientNetwork::GCVirtualVolumeSize(void* event, void* data)
 	msg.header_.data_type_ = CD_VolumeSize;
 	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 	memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+	std::cout << "__________" << std::endl;
 	std::cerr << "**" << msg.name_ << "**" << std::endl;
 	std::cerr << "++++++++++++++++++ " << std::endl;
 	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));

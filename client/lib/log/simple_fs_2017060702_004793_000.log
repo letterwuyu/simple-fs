@@ -1,0 +1,2 @@
+2017-06-07 02:36:17.434 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-06-07 02:36:17.436 LOG_ALARM  logger id=0 path=./log/ name=simple_fs level=0 display=1 

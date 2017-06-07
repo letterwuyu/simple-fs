@@ -32,7 +32,6 @@ void GateServer::NetHandle(void* net_pack)
 		return;
 	}
 */
-	std::cerr << "map : " << DG_Shake << "msg : " << static_cast<NetDataHeader*>(com_pack->GetData())->data_type_ << std::endl;
 	handle_map_[static_cast<NetDataHeader*>(com_pack->GetData())->data_type_](com_pack->GetEvent(), com_pack->GetData());
 }
 
@@ -115,7 +114,6 @@ bool GateServer::DGUpdateVolume(void* event, void* data)
 //创建卷
 bool GateServer::CGCreateVirtualVolume(void* event, void* data)
 {
-	std::cerr << "create virtual volume" << std::endl;
 	if(nullptr == event || nullptr == data)
 	{
 		LogError("GateServer::GDCreateVolume nullptr == event || nullptr == data");
@@ -174,7 +172,6 @@ bool GateServer::CGDeleteVirtualVolume(void* event, void* data)
 		return false;
 	}
 	VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
-	
 	{
 		GD_DeleteVolumeMessage msg;
 		msg.header_.data_type_ = GD_DeleteVolume;
@@ -187,6 +184,7 @@ bool GateServer::CGDeleteVirtualVolume(void* event, void* data)
 	}
 
 	{
+		GSingle(VirtualVolumeManager)->DeleteVirtualVolume(pack->name_);
 		GC_DeleteVirtualVolumeMessage msg;
 		msg.header_.data_type_ = GC_DeleteVirtualVolume;
 		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
@@ -268,7 +266,6 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 		msg.code_ = Return_Succeed;
 		msg.id_ = (*server_list.begin())->server_id_;
 		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
-		std::cerr << "@@" << pack->name_ << "@@" << msg.name_ << std::endl;
 		msg.orgin_ = pack->orgin_;
 		msg.size_ = pack->size_;
 		strcpy(msg.ip_, (*server_list.begin())->listen_ip_.c_str());
@@ -286,7 +283,7 @@ bool GateServer::CGVirtualVolumeSize(void* event, void* data)
 		return false;
 	} 
 	CG_VirtualVolumeSizeMessage* pack = static_cast<CG_VirtualVolumeSizeMessage*>(data);
-    std::cout << "&&&&&&&&&&&&&" << pack->name_ << "&&&&&&&&&&&&&&&&" << std::endl;
+    std::cout << "&&&&```````````````" << pack->name_ << "&&&&&&&&&&&&&&&&" << std::endl;
 	const VirtualVolume* virtual_volume = GSingle(VirtualVolumeManager)->GetVirtualVolume(std::string(pack->name_));
 	if(nullptr == virtual_volume)
 	{
@@ -306,7 +303,6 @@ bool GateServer::CGVirtualVolumeSize(void* event, void* data)
 		msg.code_ = Return_Succeed;
 		msg.id_ = (*server_list.begin())->server_id_;
 		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
-		std::cerr << "@@" << pack->name_ << "@@" << msg.name_ << std::endl;
 		strcpy(msg.ip_, (*server_list.begin())->listen_ip_.c_str());
 		msg.port_ = (*server_list.begin())->listen_port_;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
@@ -340,11 +336,9 @@ GateServer::~GateServer() {}
 
 void GateServer::ListenHandle(struct bufferevent* bev, struct sockaddr *sa, int socklen)
 {
-	std::cerr << "Listen handle" << std::endl;
 	GateEvent* gate_event = new GateEvent(NetHandle);
 	gate_event->SetBuffer(bev);
 	gate_event->SetSockAddr(sa, socklen);
-	std::cerr << "address" << gate_event->GetIp() << " : " << gate_event->GetPort() << std::endl;
 	gate_event->Init();
 	if(nullptr == gate_event)
 	{

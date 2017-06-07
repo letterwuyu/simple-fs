@@ -66,7 +66,7 @@ bool MongoDBManager::DeleteServerForVirtual(const std::string& virtual_volume_na
 {
 	builder::stream::document delete_doc;
     delete_doc << "name" << virtual_volume_name
-              << "server" << server_id;
+              << "server" << std::to_string(server_id);
     auto collection = conn_[db_name_][collections_[Collection_VirtualVolume]];
     collection.delete_one(delete_doc.view());
     LogInfo("MongoDBManager::CreateServerForVirtual delete server : " << server_id << "from virtual_volume" << virtual_volume_name);
