@@ -11,4 +11,12 @@ DEFINE_MESSAGE_BEGIN(CD_ReadVolume)
 		memset(this, 0, sizeof(*this));
 	}
 DEFINE_MESSAGE_END
+
+DEFINE_MESSAGE_BEGIN(CD_VolumeSize)
+    char   name_[MaxVolumeNameSize];
+    void Clear()
+    {   
+        memset(this, 0, sizeof(*this));
+    }   
+DEFINE_MESSAGE_END
 #endif //_CD_NET_STRUCT_H__

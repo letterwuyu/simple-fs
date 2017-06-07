@@ -89,6 +89,8 @@ void GateServer::RegisterProcess(void)
 	handle_map_.insert(std::make_pair(CG_UpdateVirtualVolume, GateServer::CGUpdateVirtualVolume));
 
 	handle_map_.insert(std::make_pair(CG_ReadVirtualVolume, GateServer::CGReadVirtualVolume));
+	handle_map_.insert(std::make_pair(CG_VirtualVolumeSize, GateServer::CGVirtualVolumeSize));
+
 	
 	handle_map_.insert(std::make_pair(DG_Shake, GateServer::DGShake));
 	handle_map_.insert(std::make_pair(DG_CreateVolume, GateServer::DGCreateVolume));
@@ -244,8 +246,9 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 	{
 		LogError("GateServer::CGReadVolume nullptr == event || nullptr == data");
 		return false;
-	}
+	} 
 	CG_ReadVirtualVolumeMessage* pack = static_cast<CG_ReadVirtualVolumeMessage*>(data);
+    std::cout << "&&&&&&&&&&&&&" << pack->name_ << "&&&&&&&&&&&&&&&&" << std::endl;
 	const VirtualVolume* virtual_volume = GSingle(VirtualVolumeManager)->GetVirtualVolume(std::string(pack->name_));
 	if(nullptr == virtual_volume)
 	{
@@ -264,7 +267,8 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 		msg.code_ = Return_Succeed;
 		msg.id_ = (*server_list.begin())->server_id_;
-		strcpy(msg.name_, pack->name_);
+		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+		std::cerr << "@@" << pack->name_ << "@@" << msg.name_ << std::endl;
 		msg.orgin_ = pack->orgin_;
 		msg.size_ = pack->size_;
 		strcpy(msg.ip_, (*server_list.begin())->listen_ip_.c_str());
@@ -273,6 +277,43 @@ bool GateServer::CGReadVirtualVolume(void* event, void* data)
 		return true;
 	}
 }
+
+bool GateServer::CGVirtualVolumeSize(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("GateServer::CGVolumeSize nullptr == event || nullptr == data");
+		return false;
+	} 
+	CG_VirtualVolumeSizeMessage* pack = static_cast<CG_VirtualVolumeSizeMessage*>(data);
+    std::cout << "&&&&&&&&&&&&&" << pack->name_ << "&&&&&&&&&&&&&&&&" << std::endl;
+	const VirtualVolume* virtual_volume = GSingle(VirtualVolumeManager)->GetVirtualVolume(std::string(pack->name_));
+	if(nullptr == virtual_volume)
+	{
+		GC_VirtualVolumeSizeMessage msg;
+		msg.header_.data_type_ = CG_VirtualVolumeSize;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.code_ = Return_Fail;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+		return false;
+	}
+	else
+	{
+		VirtualVolume::ServerList server_list = virtual_volume->GetServerList();
+		GC_ReadVirtualVolumeMessage msg;
+		msg.header_.data_type_ = GC_VirtualVolumeSize;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.code_ = Return_Succeed;
+		msg.id_ = (*server_list.begin())->server_id_;
+		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+		std::cerr << "@@" << pack->name_ << "@@" << msg.name_ << std::endl;
+		strcpy(msg.ip_, (*server_list.begin())->listen_ip_.c_str());
+		msg.port_ = (*server_list.begin())->listen_port_;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+		return true;
+	}
+}
+
 
 bool GateServer::DGShake(void* event, void* data)
 {

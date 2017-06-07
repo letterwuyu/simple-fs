@@ -1,0 +1,4 @@
+2017-06-07 00:20:53.744 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-06-07 00:20:53.745 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-06-07 00:20:53.746 LOG_ERROR DataServer::Connection -1 == sockfd ( data_server.cc ) : 74 
+2017-06-07 00:20:53.746 LOG_ERROR DataServer::Run nullptr == gate_link ( data_server.cc ) : 262 

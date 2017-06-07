@@ -23,6 +23,7 @@ private:
 public:
     const 		std::string& GetName(void) const;
     int         GetId(void) const;
+	size_t      GetSize();
 
 private:
 	comminute_type Comminute(size_t orgin, char* data, size_t count);	

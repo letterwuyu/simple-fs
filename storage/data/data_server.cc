@@ -94,6 +94,7 @@ void DataServer::RegisterProcess(void)
 	handle_map_.insert(std::make_pair(GD_UpdateVolume, DataServer::GDUpdateVolume));
 
 	handle_map_.insert(std::make_pair(CD_ReadVolume, DataServer::CDReadVolume));
+	handle_map_.insert(std::make_pair(CD_VolumeSize, DataServer::CDVolumeSize));
 }
 //创建卷
 bool DataServer::GDCreateVolume(void* event, void* data)
@@ -218,13 +219,58 @@ bool DataServer::CDReadVolume(void* event, void* data)
 		msg.header_.data_type_ = DC_ReadVolume;
 		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 		memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
-		volume->Read(pack->orgin_, msg.data_, pack->size_);
+		if(volume->Read(pack->orgin_, msg.data_, pack->size_))
+		{
+			msg.code_ = Return_Succeed;
+		}
+		else
+		{
+			msg.code_ = Return_Fail;
+		}
+		std::cerr << "----------" << msg.data_ << "---------" << std::endl;
 		msg.size_ = pack->size_;
 		msg.orgin_ = pack->orgin_;
 		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
 		return true;
 	}
 }
+
+
+bool DataServer::CDVolumeSize(void* event, void* data)
+{
+	std::cerr << "DataServer::CDVolumeSize" << std::endl;
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("DataServer::CDVolumeSize nullptr == event || nullptr == data");
+		return false;
+	}
+	
+	CD_VolumeSizeMessage* pack = static_cast<CD_VolumeSizeMessage*>(data);
+	pack->name_[MaxVolumeNameSize - 1] = '\0';
+	Volume* volume = GSingle(VolumeManager)->GetVolume(std::string(pack->name_));
+
+	if(nullptr == volume)
+	{
+		LogError("DataServer::CDVolumeSize nullptr == volume");
+		DC_VolumeSizeMessage msg;
+		msg.header_.data_type_ = DC_VolumeSize;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.code_ = Return_Fail;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+		return false; 
+	}
+	else
+	{
+		DC_VolumeSizeMessage msg;
+		msg.header_.data_type_ = DC_VolumeSize;
+		msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+		msg.size_ = volume->GetSize();
+		msg.code_ = Return_Succeed;
+		SendMessage(static_cast<void*>(event), static_cast<void*>(&msg), sizeof(msg));
+		return true;
+	}
+}
+
 
 DataServer::DataServer():
 	MainEvent("127.0.0.1", 8889), CommonThread() {}

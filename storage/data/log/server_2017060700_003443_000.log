@@ -1,0 +1,5 @@
+2017-06-07 00:26:08.834 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-06-07 00:26:08.834 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-06-07 00:26:15.006 LOG_INFO MongoDBManager::AddUnitForVolume add unit : 5183195538053for volume1 ( ../../common/db/mongodb_manager.cc ) : 83 
+2017-06-07 00:26:15.007 LOG_ERROR VolumeManager::GetVolume volume_map_.end() == it ( volume_manager.cc ) : 56 
+2017-06-07 00:26:15.007 LOG_ERROR DataServer::CDReadVolume nullptr == volume ( data_server.cc ) : 206 

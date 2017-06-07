@@ -217,12 +217,68 @@ bool ClientNetwork::GCReadVirtualVolume(void* event, void* data)
 	msg.header_.data_type_ = CD_ReadVolume;
 	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
 	memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+	std::cerr << "**" << msg.name_ << "**" << std::endl;
 	msg.orgin_ = pack->orgin_;
 	msg.size_ = pack->size_;
 	std::cerr << "++++++++++++++++++ " << std::endl;
 	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));
 	return true;
 }
+
+bool ClientNetwork::GCVirtualVolumeSize(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("ClientNetwork::CDVolumeSize nullptr == event || nullptr == data");
+		return false;
+	}
+	GC_VirtualVolumeSizeMessage* pack = static_cast<GC_VirtualVolumeSizeMessage*>(data);
+	if(Return_Fail == pack->code_)
+	{
+		if(promise_list_.empty())
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume promise_list_.empty()");
+			return false;
+		}
+		std::promise<PromiseInfo>* promise = promise_list_.front();
+		promise_list_.pop();
+		if(nullptr == promise)
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume nullptr == promise");
+			return false;
+		}
+		promise->set_value(&pack->code_);
+		return false;
+	}
+	auto it = data_event_map_.find(pack->id_);
+	if(data_event_map_.end() == it)
+	{
+		std::cerr << pack->ip_ << " " << pack->port_ << std::endl;
+		ClientEvent* client_event = Connection(std::string(pack->ip_), pack->port_);
+		if(nullptr == client_event)
+		{
+			LogError("ClientNetwork::GCReadVirtualVolume nullptr == client_event");
+			return false;
+		}
+		data_event_map_.insert(std::make_pair(pack->id_, client_event));
+	}
+	it = data_event_map_.find(pack->id_);
+	if(data_event_map_.end() == it)
+	{
+		LogError("ClientNetwork::GCReadVirtualVolume data_event_map_.end() == it");
+		return false;
+	}
+	CD_VolumeSizeMessage msg;
+	msg.header_.data_type_ = CD_VolumeSize;
+	msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	memcpy(msg.name_, pack->name_, MaxVolumeNameSize);
+	std::cerr << "**" << msg.name_ << "**" << std::endl;
+	std::cerr << "++++++++++++++++++ " << std::endl;
+	SendMessage(static_cast<void*>(it->second), static_cast<void*>(&msg), sizeof(msg));
+	return true;
+}
+
+
 
 bool ClientNetwork::DCReadVolume(void* event, void* data)
 {
@@ -232,7 +288,7 @@ bool ClientNetwork::DCReadVolume(void* event, void* data)
 		return false;
 	}
 	DC_ReadVolumeMessage* pack = static_cast<DC_ReadVolumeMessage*>(data);
-	std::cerr << "----------" << pack->data_ << std::endl;
+	std::cerr << "----------" << pack->data_  << "-------------------"<< std::endl;
 	if(promise_list_.empty())
 	{
 		LogError("ClientNetwork::DCReadVolume promise_list_.empty()");
@@ -245,12 +301,74 @@ bool ClientNetwork::DCReadVolume(void* event, void* data)
 		LogError("ClientNetwork::DCReadVolume nullptr == promise");
 		return false;
 	}
+	if(Return_Fail == pack->code_)
+	{
+        LogError("ClientNetwork::DCReadVolume Return_Fail == pack->code_");
+		promise->set_value(nullptr);
+		return false;
+	}
 	promise->set_value(pack->data_);
 	return true;
 }
 
-ClientNetwork::ClientNetwork():
-	MainEvent("127.0.0.1", 8888), CxxThread() {}
+bool ClientNetwork::DCVolumeSize(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+	{
+		LogError("ClientNetwork::DCReadVolume nullptr == event || nullptr == data");
+		return false;
+	}
+	DC_VolumeSizeMessage* pack = static_cast<DC_VolumeSizeMessage*>(data);
+	if(promise_list_.empty())
+	{
+		LogError("ClientNetwork::DCReadVolume promise_list_.empty()");
+		return false;
+	}
+	std::promise<PromiseInfo>* promise = promise_list_.front();
+	promise_list_.pop();
+	if(nullptr == promise)
+	{
+		LogError("ClientNetwork::DCReadVolume nullptr == promise");
+		return false;
+	}
+	if(Return_Fail == pack->code_)
+	{
+        LogError("ClientNetwork::DCReadVolume Return_Fail == pack->code_");
+		promise->set_value(nullptr);
+		return false;
+	}
+	promise->set_value(&pack->size_);
+	return true;
+}
+
+
+bool ClientNetwork::GCCreateUser(void* event, void* data)
+{
+	if(nullptr == event || nullptr == data)
+    {   
+        LogError("ClientNetwork::GCCreateUser nullptr == event || nullptr == data");
+        return false;
+
+    }   
+    GC_CreateUserMessage* pack = static_cast<GC_CreateUserMessage*>(data);
+    if(promise_list_.empty())
+    {   
+        LogError("ClientNetwork::GCCreateUser promise_list_.empty()");
+        return false;
+    }   
+    std::promise<PromiseInfo>* promise = promise_list_.front();
+    promise_list_.pop();
+    if(nullptr == promise)
+    {   
+        LogError("ClientNetwork::GCCreateUser nullptr == promise");
+        return false;
+    }   
+    promise->set_value(&(pack->code_));
+    return true;	
+}
+
+ClientNetwork::ClientNetwork(const std::string& name, const std::string& pwd):
+	MainEvent("127.0.0.1", 8888), CxxThread(), name_(name), pwd_(pwd) {}
 
 ClientNetwork::~ClientNetwork() {}
 
@@ -360,20 +478,117 @@ bool ClientNetwork::ReadFile(const std::string& name, size_t orgin, void* data, 
 	CG_ReadVirtualVolumeMessage msg;
 	strcpy(msg.name_, name.c_str());
 	msg.orgin_ = orgin;
-	msg.size_ = size;
+	msg.size_ = size;	
+	msg.header_.data_type_ = CG_ReadVirtualVolume;
+    msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	std::cerr << "###" << msg.name_ << "###" << std::endl;
 	
 	std::promise<PromiseInfo> promise;
     std::future<PromiseInfo> future = promise.get_future();
     promise_list_.push(&promise);
-    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), size);	
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));	
 	void* temp_data = future.get().data_;
+
+	std::cout << "!!!!!!" << static_cast<char*>(temp_data) << std::endl;
+
+	if(nullptr == temp_data)
+	{
+		return false;
+	}
 	memcpy(data, temp_data, size);
 	if(nullptr == data)
-	{
+	{	
 		LogError("ClientNetwork::ReadFile nullptr == data");
 		return false;
 	}
 	return true;
+}
+
+size_t ClientNetwork::SizeFile(const std::string& name)
+{
+	if(name.empty() || name.size() > MaxVolumeNameSize)
+	{
+		LogError("ClientNetwork::ReadFile name.empty() || name.size() > define MaxVolumeNameSize");
+		return -1;
+	}
+	if(nullptr == gate_event_)
+	{
+		LogError("ClientNetwork::ReadFile nullptr == gate_event_");
+		return -1;
+	}
+	
+	CG_VirtualVolumeSizeMessage msg;
+	strcpy(msg.name_, name.c_str());
+	msg.header_.data_type_ = CG_VirtualVolumeSize;
+    msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+	std::cerr << "###" << msg.name_ << "###" << std::endl;
+	
+	std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> future = promise.get_future();
+    promise_list_.push(&promise);
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));	
+	void* temp_data = future.get().data_;
+
+	std::cout << "!!!!!!" << static_cast<char*>(temp_data) << std::endl;
+
+	if(nullptr == temp_data)
+	{
+		return -1;
+	}
+	return *static_cast<int*>(temp_data);
+	
+}
+
+
+bool ClientNetwork::CreateUser(const std::string& name, const std::string& password, const std::string& pwd)
+{
+	if(name.empty() || name.size() > MAX_USER_SIZE)
+	{
+		LogError("ClientNetwork::CreateUser name.empty() || name.size() > MAX_USER_SIZE");
+		return false;
+	}
+	if(password.empty() || password.size() > MAX_PASSWORD_SIZE)
+	{
+		LogError("ClientNetwork::CreateUser password.empty() || password.size() > MAX_PASSWORD_SIZE");
+		return false;
+	}
+	std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> future = promise.get_future();
+    promise_list_.push(&promise);
+    CG_CreateUserMessage msg;
+    strcpy(msg.user_, name.c_str());
+	strcpy(msg.password_, password.c_str());
+	strcpy(msg.pwd_, pwd.c_str());
+    msg.header_.data_type_ = CG_CreateUser;
+    msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
+    int result = *static_cast<int*>(future.get().data_);
+    return Return_Fail != result;
+}
+
+bool ClientNetwork::CGConnection(const std::string& name, const std::string& pwd)
+{
+	if(name.empty() || name.size() > MAX_USER_SIZE)
+    {   
+        LogError("ClientNetwork::CreateUser name.empty() || name.size() > MAX_USER_SIZE");
+        return false;
+    }   
+    if(pwd.empty() || pwd.size() > MAX_PASSWORD_SIZE)
+    {   
+        LogError("ClientNetwork::CreateUser password.empty() || password.size() > MAX_PASSWORD_SIZE");
+        return false;
+    }   
+    std::promise<PromiseInfo> promise;
+    std::future<PromiseInfo> future = promise.get_future();
+    promise_list_.push(&promise);
+    CG_ConnectionMessage msg;
+    strcpy(msg.user_, name.c_str());
+    strcpy(msg.pwd_, pwd.c_str());
+    msg.header_.data_type_ = CG_Connection;
+    msg.header_.data_size_ = sizeof(msg) - sizeof(NetDataHeader);
+    SendMessage(static_cast<void*>(gate_event_), static_cast<void*>(&msg), sizeof(msg));
+    int result = *static_cast<int*>(future.get().data_);
+    return Return_Fail != result;
 }
 
 void ClientNetwork::ListenHandle(struct bufferevent* bev, struct sockaddr *sa, int socklen)
@@ -404,7 +619,6 @@ void ClientNetwork::Instance()
   	gate_event_ = Connection(std::string("127.0.0.1"), 8888);
 	Start();
 }
-
 
 
 

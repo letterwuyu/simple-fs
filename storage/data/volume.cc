@@ -51,6 +51,10 @@ bool Volume::Write(size_t orgin, void* data, size_t count)
 
 bool Volume::Read(size_t orgin, void* data, size_t count)
 {
+	if(units_.size() * Unit::Size < orgin)
+	{
+		return false;
+	}
 	comminute_type comminutes = Comminute(orgin, static_cast<char*>(data), count);
 	for(comminute_type::iterator it = comminutes.begin();
     	it != comminutes.end(); ++it)
@@ -106,7 +110,15 @@ bool Volume::AddUnit(Unit* unit)
 	return true;
 }
 
-
+size_t Volume::GetSize()
+{
+	size_t size = 0;
+	for(auto it = units_.begin(); it != units_.end(); ++it)
+	{
+		size += (*it)->GetSize();
+	}
+	return size;
+}
 
 
 

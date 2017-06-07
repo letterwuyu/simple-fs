@@ -34,9 +34,40 @@ DEFINE_MESSAGE_BEGIN(CG_ReadVirtualVolume)
 	size_t orgin_;
 	size_t size_;
 	void Clear()
-	{
-		memset(this, 0, sizeof(*this));
-	}
+	{   
+        memset(this, 0, sizeof(*this));
+    }
 DEFINE_MESSAGE_END
 
+DEFINE_MESSAGE_BEGIN(CG_CreateUser)
+    char user_[MAX_USER_SIZE];
+    size_t user_size_;
+    char password_[MAX_PASSWORD_SIZE];
+    size_t password_size_;
+    char pwd_[MAX_PASSWORD_SIZE];
+    void Clear()
+    {   
+        memset(this, 0, sizeof(*this));
+    }
+DEFINE_MESSAGE_END
+
+
+DEFINE_MESSAGE_BEGIN(CG_Connection)
+    char user_[MAX_USER_SIZE];
+    size_t user_size_;
+    char pwd_[MAX_PASSWORD_SIZE];
+	size_t password_size_;
+    void Clear()
+    {   
+        memset(this, 0, sizeof(*this));
+    }   
+DEFINE_MESSAGE_END
+
+DEFINE_MESSAGE_BEGIN(CG_VirtualVolumeSize)
+    char name_[MaxVolumeNameSize];
+    void Clear()
+    {   
+        memset(this, 0, sizeof(*this));
+    }   
+DEFINE_MESSAGE_END
 #endif //_CG_NET_STRUCT_H__

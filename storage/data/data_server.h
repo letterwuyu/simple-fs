@@ -35,6 +35,7 @@ private:
 	static bool GDUpdateVolume(void* event, void* data);
 	
 	static bool CDReadVolume(void* event, void* data);	
+	static bool CDVolumeSize(void* event, void* data);
 private:
 	static HandleMap handle_map_;
 	std::vector<DataEvent*> events_;

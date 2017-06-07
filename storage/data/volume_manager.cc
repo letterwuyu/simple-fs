@@ -24,6 +24,9 @@ Volume* VolumeManager::CreateVolume(const std::string& volume_name)
 {
 	std::hash<std::string> hash_fn;
 	int volume_id = hash_fn(volume_name);
+	
+	std::cerr << "--" << volume_name << "--" << std::endl;
+
 	Volume* vp = new Volume(volume_name, volume_id);
 	if(nullptr == vp)
 	{
@@ -46,6 +49,7 @@ Volume* VolumeManager::GetVolume(const std::string& volume_name)
      uint64 volume_id = hash_fn(volume_name);
 	 return GetVolume(volume_id);
 */
+	std::cout << "++" << volume_name << "++" << std::endl;
 	auto it = volume_map_.find(volume_name);
 	if(volume_map_.end() == it)
 	{

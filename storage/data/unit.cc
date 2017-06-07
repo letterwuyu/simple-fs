@@ -55,3 +55,23 @@ std::string Unit::GetName()
 {
 	return name_;
 }
+
+size_t Unit::GetSize()
+{
+	int file_handle = open(name_.c_str(), O_RDONLY);
+	size_t size = lseek(file_handle, 0, SEEK_END);  
+    close(file_handle);
+    return size;  	
+}
+
+
+
+
+
+
+
+
+
+
+
+

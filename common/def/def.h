@@ -31,6 +31,8 @@
 #define GET_SIZE(type) type.header_.data_size_
 #define GATE_UNPACK(type, data) PACKAGE_TYPE(type)* pack = static_cast<PACKAGE_TYPE(type) * >(data);
 #define MAX_VOLUME_NAME 20
+#define MAX_USER_SIZE 20
+#define MAX_PASSWORD_SIZE 20
 
 //log
 #define LogInfo  	LOGI

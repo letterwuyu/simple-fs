@@ -1,0 +1,7 @@
+2017-06-07 00:26:04.243 LOG_ALARM -----------------  log4z thread started!   ---------------------------- 
+2017-06-07 00:26:04.243 LOG_ALARM  logger id=0 path=./log/ name=server level=0 display=1 
+2017-06-07 00:26:08.836 LOG_INFO GateServer::DGShake ( gate_server.cc ) : 279 
+2017-06-07 00:26:15.001 LOG_INFO MongoDBManager::CreateServerForVirtual add server : 1for virtual_volume1 ( ../../common/db/mongodb_manager.cc ) : 61 
+2017-06-07 00:26:59.044 LOG_INFO GateServer::DGShake ( gate_server.cc ) : 279 
+2017-06-07 00:29:48.692 LOG_ERROR VirtualVolumeManager::CreateVirtualVolume virtual_volume_map_.end() != it ( virtual_volume_manager.cc ) : 53 
+2017-06-07 00:29:48.692 LOG_ERROR GateServer::CGCreateVirtualVolume nullptr == virtual_volume ( gate_server.cc ) : 131 

@@ -14,6 +14,7 @@ public:
 	bool        Delete();
 	long long  		GetId();
 	std::string      GetName();
+	size_t      GetSize();
 private:
 	std::string name_;
 	long long         id_;

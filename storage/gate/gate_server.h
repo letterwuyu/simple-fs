@@ -34,6 +34,7 @@ private:
 	static bool CGUpdateVirtualVolume(void* event, void* data);
 	static bool CGReadVirtualVolume(void* event, void* data);
 	static bool CGReadVolume(void* event, void* data);
+	static bool CGVirtualVolumeSize(void* event, void* data);
 
 	static bool DGShake(void* event, void* data);
 	static bool DGCreateVolume(void* event, void* data);

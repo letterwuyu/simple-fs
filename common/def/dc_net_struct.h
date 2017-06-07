@@ -12,4 +12,14 @@ DEFINE_MESSAGE_BEGIN(DC_ReadVolume)
 		memset(this, 0, sizeof(*this));
 	}
 DEFINE_MESSAGE_END
+
+DEFINE_MESSAGE_BEGIN(DC_VolumeSize)
+    size_t size_;
+    int32_t code_;
+    void Clear()
+    {   
+        memset(this, 0, sizeof(*this));
+    }   
+DEFINE_MESSAGE_END
+
 #endif //_DC_NET_STRUCT_H__

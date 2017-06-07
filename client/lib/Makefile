@@ -5,7 +5,26 @@ ImpDir=../../common/imp
 NetDir=../../common/net
 LogDir=../../common/log4z
 
-client: main.o \
+simple_fs: simple_fs.o \
+		libevent_network.o \
+        libevent_socket.o \
+        cxx_thread.o \
+        common_package.o \
+        package_analysis.o \
+        log4z.o \
+        client_event.o \
+        client_network.o
+	$(CXX) $(CXXFLAGS) simple_fs.o \
+                       libevent_network.o \
+                       libevent_socket.o \
+                       cxx_thread.o \
+                       common_package.o \
+                       package_analysis.o \
+                       log4z.o \
+                       client_event.o \
+                       client_network.o \
+                       -o simple_fs -levent -lpthread
+lient: main.o \
 		libevent_network.o \
 		libevent_socket.o \
         cxx_thread.o \
@@ -26,6 +45,8 @@ client: main.o \
                        -o client -levent -lpthread
 main.o: main.cc
 	$(CXX) $(CXXFLAGS) -c main.cc
+simple_fs.o: simple_fs.cc
+	$(CXX) $(CXXFLAGS) -c simple_fs.cc
 libevent_network.o: $(NetDir)/libevent_network.cc
 	$(CXX) $(CXXFLAGS) -c $(NetDir)/libevent_network.cc
 libevent_socket.o: $(NetDir)/libevent_socket.cc
