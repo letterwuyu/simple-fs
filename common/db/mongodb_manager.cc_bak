@@ -1,6 +1,0 @@
-#include "mongodb_manager.h"
-
-MongoDBManager::MongoDBManager(), db_name_("mongoDB"), inst_(mongocxx::instance()), conn_(mongocxx::client(inst_)) {}
-
-MongoDBManger::~MongoDBManger() {}
-
